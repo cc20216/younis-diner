@@ -1,0 +1,2489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>有米的小馆 - 今天吃什么？</title>
+<style>
+/* ==================== 基础重置与适配 ==================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 100%; height: 100%;
+  background: #1a0f0a;
+  overflow: hidden;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+#app-wrapper {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 375px; height: 667px;
+  transform: translate(-50%, -50%) scale(1);
+  transform-origin: center center;
+  overflow: hidden;
+  background: #2C1810;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+@media (max-width: 400px) {
+  #app-wrapper { width: 100vw; height: 100vh; border-radius: 0; }
+}
+@media (max-height: 720px) {
+  #app-wrapper { transform: translate(-50%, -50%) scale(0.92); }
+}
+@media (max-height: 600px) {
+  #app-wrapper { transform: translate(-50%, -50%) scale(0.82); }
+}
+
+/* ==================== Stage 过渡动画 ==================== */
+.stage {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transform: translateX(0);
+  transition: none;
+}
+.stage.active {
+  display: flex;
+}
+.stage.slide-out {
+  animation: slideOut 0.3s ease-in forwards;
+}
+.stage.slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+@keyframes slideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(-60px); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ==================== 通用动画 ==================== */
+@keyframes shake {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes popIn {
+  0% { transform: scale(0); opacity: 0; }
+  80% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+@keyframes earWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-8deg); }
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  15% { transform: translateY(-28px) scale(1.05, 0.95); }
+  30% { transform: translateY(-12px) scale(0.95, 1.05); }
+  50% { transform: translateY(-22px) scale(1.02, 0.98); }
+  70% { transform: translateY(-14px) scale(0.98, 1.02); }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes starPop {
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1.5) rotate(180deg); opacity: 0; }
+}
+@keyframes tearDrop {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(30px) scale(0.6); opacity: 0; }
+}
+@keyframes goldenGlow {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.8); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(2.5); }
+}
+@keyframes goldenParticle {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+}
+@keyframes goldenStarParticle {
+  0% { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(360deg) scale(0); }
+}
+@keyframes lightBurst {
+  0% { opacity: 0; transform: translate(-50%,-50%) scaleY(0) rotate(var(--angle)); }
+  30% { opacity: 1; transform: translate(-50%,-50%) scaleY(1) rotate(var(--angle)); }
+  100% { opacity: 0; transform: translate(-50%,-50%) scaleY(1.2) rotate(var(--angle)); }
+}
+@keyframes hatchShake {
+  0%, 100% { transform: translate(-50%,-50%) scale(1); }
+  10% { transform: translate(-48%,-52%) scale(1.02); }
+  20% { transform: translate(-52%,-48%) scale(0.98); }
+  30% { transform: translate(-51%,-49%) scale(1.01); }
+  40% { transform: translate(-49%,-51%) scale(0.99); }
+  50% { transform: translate(-50%,-50%) scale(1); }
+}
+@keyframes eggCrack {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.05) rotate(-2deg); }
+  60% { transform: scale(0.95) rotate(2deg); }
+  100% { transform: scale(1); }
+}
+@keyframes hatchTop {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-35deg) translateY(-10px); }
+}
+@keyframes hatchBottom {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(25deg) translateY(5px); }
+}
+@keyframes hamsterRise {
+  0% { transform: translate(-50%, 30px); opacity: 0; }
+  60% { transform: translate(-50%, -5px); opacity: 1; }
+  100% { transform: translate(-50%, 0px); opacity: 1; }
+}
+@keyframes hamsterShrink {
+  0% { transform: translate(-50%, 0px) scale(1.8); opacity: 0.8; }
+  60% { transform: translate(-50%, 0px) scale(1.05); opacity: 1; }
+  100% { transform: translate(-50%, 0px) scale(1); opacity: 1; }
+}
+@keyframes glassesOn {
+  0% { transform: translateY(-30px) scale(0.5); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes apronOn {
+  0% { transform: translateY(20px) scale(0.8); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes typeCursor {
+  0%, 100% { border-color: transparent; }
+  50% { border-color: #2C1810; }
+}
+@keyframes receiptFloat {
+  0% { transform: translateY(-50px) rotate(-4deg) scale(0.85); opacity: 0; }
+  40% { transform: translateY(8px) rotate(2deg) scale(1.03); opacity: 1; }
+  70% { transform: translateY(-4px) rotate(-1deg) scale(0.99); opacity: 1; }
+  100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+}
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-4deg); }
+  75% { transform: rotate(4deg); }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(255,215,0,0.4); }
+  50% { box-shadow: 0 0 24px rgba(255,215,0,0.8), 0 0 40px rgba(255,215,0,0.3); }
+}
+@keyframes bgFlash {
+  0% { opacity: 0; }
+  20% { opacity: 0.3; }
+  100% { opacity: 0; }
+}
+@keyframes thinkTilt {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(6deg); }
+}
+@keyframes dustFloat {
+  0% { transform: translate(0, 0) scale(1); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.5); opacity: 0; }
+}
+@keyframes sadOverlay {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ==================== 木纹纹理背景 ==================== */
+.tavern-bg-texture {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(139,69,19,0.03) 1px,
+      transparent 2px,
+      transparent 18px
+    ),
+    repeating-linear-gradient(
+      85deg,
+      transparent 0px,
+      rgba(92,58,30,0.02) 1px,
+      transparent 2px,
+      transparent 25px
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ==================== 暖光渐晕 ==================== */
+.warm-vignette {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 50% 85%, rgba(245,166,35,0.08) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ==================== 浮尘粒子容器 ==================== */
+.dust-container {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+.dust-particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: dustFloat var(--dur) linear forwards;
+  opacity: 0;
+}
+
+/* ==================== 伤心背景覆盖层 ==================== */
+.sad-bg-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.15);
+  pointer-events: none;
+  z-index: 45;
+  opacity: 0;
+  animation: sadOverlay 0.5s ease-out forwards;
+}
+
+/* ==================== 暖色闪光 ==================== */
+.warm-flash-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(ellipse at center, rgba(245,166,35,0.25) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 45;
+  animation: bgFlash 1s ease-out forwards;
+}
+
+/* ==================== 对话气泡 ==================== */
+.bubble {
+  position: absolute;
+  background: #FFF8F0;
+  color: #2C1810;
+  padding: 14px 18px;
+  border-radius: 18px;
+  border-bottom-left-radius: 4px;
+  max-width: 220px;
+  max-height: 90px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.6;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 50;
+  animation: popIn 0.4s ease-out;
+}
+.bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px; left: 20px;
+  width: 0; height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 10px solid #FFF8F0;
+}
+.bubble.typing::after {
+  content: '|';
+  animation: typeCursor 0.8s infinite;
+  border: none;
+  position: static;
+  margin-left: 2px;
+}
+
+/* ==================== SVG 有米角色容器 ==================== */
+.youni-container {
+  position: relative;
+  width: 120px; height: 140px;
+  z-index: 10;
+}
+.youni-container svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* SVG 角色情绪状态 */
+.youni-happy .youni-mouth-path {
+  d: path("M 42 42 Q 50 50 58 42");
+}
+.youni-happy .youni-eye-l,
+.youni-happy .youni-eye-r {
+  ry: 2;
+}
+.youni-happy .youni-arm-l {
+  transform: rotate(-30deg);
+  transform-origin: 30px 85px;
+  transition: transform 0.3s;
+}
+.youni-happy .youni-arm-r {
+  transform: rotate(30deg);
+  transform-origin: 70px 85px;
+  transition: transform 0.3s;
+}
+.youni-happy svg {
+  animation: wobble 0.4s ease-in-out 3;
+}
+
+.youni-sad .youni-eye-l,
+.youni-sad .youni-eye-r {
+  ry: 1.5;
+  cy: 33;
+  opacity: 0.6;
+}
+.youni-sad .youni-mouth-path {
+  d: path("M 42 45 Q 50 39 58 45");
+}
+.youni-sad .youni-ear-l {
+  transform: rotate(15deg);
+  transform-origin: 25px 28px;
+  transition: transform 0.3s;
+}
+.youni-sad .youni-ear-r {
+  transform: rotate(-15deg);
+  transform-origin: 75px 28px;
+  transition: transform 0.3s;
+}
+.youni-sad .youni-arm-l {
+  transform: rotate(10deg);
+  transform-origin: 30px 85px;
+  transition: transform 0.3s;
+}
+.youni-sad .youni-arm-r {
+  transform: rotate(-10deg);
+  transform-origin: 70px 85px;
+  transition: transform 0.3s;
+}
+
+.youni-excited svg {
+  animation: bounce 0.5s ease-in-out infinite;
+}
+
+.youni-thinking svg {
+  animation: thinkTilt 1.2s ease-in-out infinite;
+}
+.youni-thinking .youni-eye-l,
+.youni-thinking .youni-eye-r {
+  cx: 40;
+  r: 4;
+}
+
+/* 星星特效 */
+.star {
+  position: absolute;
+  width: 16px; height: 16px;
+  background: #F5A623;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  animation: starPop 0.8s ease-out forwards;
+  z-index: 100;
+}
+
+/* 眼泪 */
+.tear {
+  position: absolute;
+  top: 40px;
+  width: 6px; height: 10px;
+  background: #87CEEB;
+  border-radius: 50%;
+  animation: tearDrop 1.2s ease-in forwards;
+  z-index: 20;
+}
+.tear.left { left: 20px; }
+.tear.right { right: 20px; }
+
+/* 手帕 */
+.handkerchief {
+  position: absolute;
+  top: 60px; right: -20px;
+  width: 20px; height: 20px;
+  background: #FFB6C1;
+  border-radius: 0 50% 50% 50%;
+  animation: float 2s ease-in-out infinite;
+  z-index: 20;
+}
+
+/* ==================== 第一阶段：孵化 ==================== */
+#stage1 {
+  background: #0d0d0d;
+  cursor: pointer;
+}
+.egg-container {
+  position: relative;
+  width: 100px; height: 130px;
+}
+.egg {
+  position: absolute;
+  width: 100px; height: 130px;
+  background: #FFF8F0;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  box-shadow: inset -8px -8px 20px rgba(0,0,0,0.1), 0 8px 20px rgba(255,255,255,0.1);
+  animation: shake 2s ease-in-out infinite;
+  z-index: 2;
+}
+.egg-crack {
+  position: absolute;
+  top: 30px; left: 50%;
+  transform: translateX(-50%);
+  width: 2px; height: 40px;
+  background: #D4A574;
+  opacity: 0;
+  z-index: 3;
+}
+.egg-cracked .egg {
+  animation: eggCrack 0.5s ease-out;
+}
+.egg-cracked .egg-crack {
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+.golden-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,215,0,0.9) 0%, rgba(255,190,0,0.4) 30%, rgba(245,166,35,0.1) 60%, transparent 80%);
+  opacity: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+.golden-glow.active {
+  animation: goldenGlow 1.5s ease-out forwards;
+}
+.golden-particles {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0; height: 0;
+  z-index: 11;
+  pointer-events: none;
+}
+.golden-particle {
+  position: absolute;
+  width: 5px; height: 5px;
+  background: #FFD700;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #FFD700;
+  animation: goldenParticle 1s ease-out forwards;
+}
+.golden-star-particle {
+  position: absolute;
+  width: 8px; height: 8px;
+  background: #FFF8F0;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  animation: goldenStarParticle 1.2s ease-out forwards;
+}
+.light-burst-container {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 0; height: 0;
+  z-index: 12;
+  pointer-events: none;
+}
+.light-ray {
+  position: absolute;
+  width: 3px;
+  height: 60px;
+  top: -60px; left: -1.5px;
+  background: linear-gradient(to top, rgba(255,215,0,0.8), rgba(255,215,0,0));
+  transform-origin: center bottom;
+  opacity: 0;
+  animation: lightBurst 1s ease-out forwards;
+}
+
+.egg-top, .egg-bottom {
+  position: absolute;
+  left: 0;
+  width: 100px;
+  background: #FFF8F0;
+  overflow: hidden;
+  z-index: 2;
+}
+.egg-top {
+  top: 0; height: 55px;
+  border-radius: 50% 50% 0 0 / 60% 60% 0 0;
+  transform-origin: bottom left;
+}
+.egg-bottom {
+  bottom: 0; height: 80px;
+  border-radius: 0 0 50% 50% / 0 0 40% 40%;
+  transform-origin: top right;
+}
+.egg-hatched .egg-top { animation: hatchTop 0.8s ease-out forwards; }
+.egg-hatched .egg-bottom { animation: hatchBottom 0.8s ease-out forwards; }
+
+#hatchedYouni {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, 30px);
+  opacity: 0;
+  z-index: 5;
+}
+#hatchedYouni.show {
+  animation: hamsterRise 0.8s ease-out forwards;
+}
+#hatchedYouni.shrink {
+  animation: hamsterShrink 0.5s ease-out forwards;
+}
+
+/* ==================== 第二阶段：偏好采集 ==================== */
+#stage2 {
+  background: linear-gradient(180deg, #3D2418 0%, #2C1810 100%);
+}
+.tavern-scene {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  overflow: hidden;
+}
+.bar-counter {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 180px;
+  background: linear-gradient(180deg, #5C3A1E 0%, #3D2418 100%);
+  border-top: 4px solid #8B5A2B;
+}
+.bar-counter::before {
+  content: '';
+  position: absolute;
+  top: 10px; left: 0;
+  width: 100%; height: 2px;
+  background: #8B5A2B;
+}
+.blackboard {
+  position: absolute;
+  top: 20px; right: 16px;
+  width: 140px; height: 180px;
+  background: #1a1a1a;
+  border: 4px solid #8B5A2B;
+  border-radius: 4px;
+  padding: 10px;
+  color: #F5A623;
+  font-size: 11px;
+  line-height: 1.8;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  z-index: 20;
+}
+.blackboard-title {
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: #FFF8F0;
+  border-bottom: 1px solid #F5A623;
+  padding-bottom: 4px;
+  margin-bottom: 8px;
+}
+.lamp {
+  position: absolute;
+  top: -10px; left: 50%;
+  transform: translateX(-50%);
+  width: 60px; height: 40px;
+  background: radial-gradient(ellipse at center, rgba(245,166,35,0.4) 0%, transparent 70%);
+  z-index: 5;
+}
+.lamp::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 2px; height: 30px;
+  background: #5C3A1E;
+}
+
+.question-area {
+  position: absolute;
+  top: 36%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  text-align: center;
+  z-index: 30;
+}
+.question-title {
+  color: #FFF8F0;
+  font-size: 18px;
+  margin-bottom: 24px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.choice-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.choice-btn {
+  padding: 12px 32px;
+  border: 2px solid #F5A623;
+  background: rgba(245,166,35,0.15);
+  color: #F5A623;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 140px;
+  height: 48px;
+  box-sizing: border-box;
+}
+.choice-btn:hover {
+  background: #F5A623;
+  color: #2C1810;
+  transform: scale(1.05);
+}
+.skip-btn {
+  background: transparent;
+  border: 1px solid #8B7355;
+  color: #8B7355;
+  padding: 8px 20px;
+  border-radius: 16px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.skip-btn:hover { color: #FFF8F0; border-color: #FFF8F0; }
+
+.taboo-input {
+  width: 200px;
+  padding: 10px 14px;
+  border: 2px solid #F5A623;
+  background: rgba(0,0,0,0.3);
+  color: #FFF8F0;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+  outline: none;
+}
+.taboo-input::placeholder { color: #8B7355; }
+
+.prop-chili {
+  position: absolute;
+  top: 18%; left: 20%;
+  font-size: 40px;
+  animation: float 3s ease-in-out infinite;
+  z-index: 8;
+}
+.prop-bowl {
+  position: absolute;
+  top: 18%; right: 20%;
+  font-size: 40px;
+  animation: float 3s ease-in-out infinite 0.5s;
+  z-index: 8;
+}
+
+/* ==================== 第三阶段：智能决策 ==================== */
+#stage3 {
+  background: linear-gradient(180deg, #3D2418 0%, #2C1810 100%);
+  justify-content: flex-start !important;
+  padding-top: 60px;
+}
+.wheel-area {
+  position: relative;
+  width: 320px; height: 280px;
+  margin: 0 auto;
+}
+#wheelCanvas {
+  width: 280px; height: 280px;
+}
+.wheel-pointer {
+  position: absolute;
+  top: -16px; left: 50%;
+  transform: translateX(-50%);
+  width: 28px; height: 28px;
+  z-index: 21;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+}
+.wheel-pointer svg {
+  width: 100%; height: 100%;
+}
+.wheel-pulse {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 290px; height: 290px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 22;
+  animation: pulseGlow 1s ease-in-out infinite;
+  opacity: 0;
+}
+.wheel-pulse.active { opacity: 1; }
+
+.input-area {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  text-align: center;
+  z-index: 30;
+}
+.options-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #F5A623;
+  background: rgba(0,0,0,0.3);
+  color: #FFF8F0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  margin-bottom: 12px;
+}
+.options-input::placeholder { color: #8B7355; }
+.spin-btn {
+  padding: 12px 32px;
+  background: #F5A623;
+  color: #2C1810;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(245,166,35,0.3);
+  min-width: 140px;
+  height: 48px;
+  box-sizing: border-box;
+}
+.spin-btn:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(245,166,35,0.4); }
+.spin-btn:disabled { background: #8B7355; cursor: not-allowed; transform: none; }
+
+.analyzing-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 100;
+}
+.analyzing-overlay.show { display: flex; }
+.think-bubble {
+  width: 60px; height: 50px;
+  background: #FFF8F0;
+  border-radius: 50%;
+  position: relative;
+  margin-bottom: 20px;
+  animation: float 1.5s ease-in-out infinite;
+}
+.think-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px; left: 10px;
+  width: 12px; height: 12px;
+  background: #FFF8F0;
+  border-radius: 50%;
+}
+.think-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -18px; left: 4px;
+  width: 8px; height: 8px;
+  background: #FFF8F0;
+  border-radius: 50%;
+}
+.think-text {
+  color: #FFF8F0;
+  font-size: 14px;
+  animation: fadeIn 0.5s;
+}
+
+.receipt-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+.receipt-overlay.show { display: flex; }
+.receipt {
+  width: 280px;
+  background: #FFF8F0;
+  padding: 24px 20px;
+  position: relative;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  animation: receiptFloat 0.6s ease-out;
+}
+.receipt::before, .receipt::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%; height: 8px;
+  background: linear-gradient(135deg, transparent 33%, #2C1810 33%, #2C1810 66%, transparent 66%),
+              linear-gradient(45deg, transparent 33%, #2C1810 33%, #2C1810 66%, transparent 66%);
+  background-size: 12px 12px;
+}
+.receipt::before { top: -8px; }
+.receipt::after { bottom: -8px; transform: rotate(180deg); }
+.receipt-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #2C1810;
+  margin-bottom: 16px;
+  border-bottom: 1px dashed #D4A574;
+  padding-bottom: 8px;
+}
+.receipt-result {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #F5A623;
+  margin: 16px 0;
+}
+.receipt-note {
+  font-size: 12px;
+  color: #8B7355;
+  text-align: center;
+  margin-top: 12px;
+}
+.receipt-close {
+  position: absolute;
+  top: 8px; right: 12px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #8B7355;
+  cursor: pointer;
+}
+
+/* ==================== 第四阶段：反馈 ==================== */
+#stage4 {
+  background: linear-gradient(180deg, #3D2418 0%, #2C1810 100%);
+  padding-top: 40px;
+  justify-content: flex-start !important;
+}
+.feedback-area {
+  text-align: center;
+  z-index: 30;
+  margin-top: 50px;
+}
+.feedback-title {
+  color: #FFF8F0;
+  font-size: 20px;
+  margin-bottom: 30px;
+}
+.feedback-btns {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+.feedback-btn {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  border: 3px solid;
+  background: rgba(0,0,0,0.3);
+  font-size: 32px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.feedback-btn.good { border-color: #4CAF50; }
+.feedback-btn.good:hover { background: #4CAF50; transform: scale(1.1); }
+.feedback-btn.ok { border-color: #FFC107; }
+.feedback-btn.ok:hover { background: #FFC107; transform: scale(1.1); }
+.feedback-btn.bad { border-color: #F44336; }
+.feedback-btn.bad:hover { background: #F44336; transform: scale(1.1); }
+
+.attribution-box {
+  margin-top: 20px;
+  display: none;
+}
+.attribution-box.show { display: block; animation: popIn 0.4s; }
+.attribution-box p { color: #FFF8F0; font-size: 14px; margin-bottom: 10px; }
+.attribution-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.att-tag {
+  padding: 6px 14px;
+  border: 1px solid #8B7355;
+  background: rgba(0,0,0,0.3);
+  color: #FFF8F0;
+  border-radius: 16px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.att-tag:hover, .att-tag.selected {
+  border-color: #F5A623;
+  background: rgba(245,166,35,0.2);
+}
+
+/* ==================== 第五阶段：图鉴 ==================== */
+#stage5 {
+  background: linear-gradient(180deg, #3D2418 0%, #2C1810 100%);
+  padding-top: 100px;
+  justify-content: flex-start !important;
+}
+.book-container {
+  position: relative;
+  width: 320px; height: 480px;
+  perspective: 1200px;
+}
+.book {
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, #8B4513 0%, #A0522D 5%, #FFF8F0 5%, #FFF8F0 95%, #A0522D 95%, #8B4513 100%);
+  border-radius: 4px 12px 12px 4px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  padding: 24px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.book-spine {
+  position: absolute;
+  left: 0; top: 0;
+  width: 16px; height: 100%;
+  background: linear-gradient(90deg, #5C3A1E, #8B4513);
+  border-radius: 4px 0 0 4px;
+}
+.book-page-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #2C1810;
+  margin-bottom: 16px;
+  border-bottom: 2px solid #D4A574;
+  padding-bottom: 8px;
+}
+.book-entry {
+  font-size: 13px;
+  color: #3D2418;
+  line-height: 2;
+  margin-bottom: 12px;
+}
+.book-entry label {
+  display: inline-block;
+  width: 60px;
+  color: #8B7355;
+  font-size: 12px;
+}
+.book-comment {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(212,165,116,0.2);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #5C3A1E;
+  font-style: italic;
+}
+.book-nav {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+}
+.book-nav button {
+  padding: 6px 16px;
+  border: 1px solid #8B7355;
+  background: transparent;
+  color: #8B7355;
+  border-radius: 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.book-nav button:hover { background: rgba(0,0,0,0.05); }
+.book-nav button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.silhouette {
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: #ccc;
+}
+.silhouette-icon {
+  font-size: 60px;
+  opacity: 0.3;
+  margin-bottom: 16px;
+}
+.silhouette-text { font-size: 14px; color: #bbb; }
+
+.bottom-menu {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 24px;
+  z-index: 50;
+}
+.menu-btn {
+  padding: 8px 20px;
+  border: 2px solid #F5A623;
+  background: rgba(245,166,35,0.15);
+  color: #F5A623;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.menu-btn:hover { background: #F5A623; color: #2C1810; }
+
+.start-btn {
+  padding: 14px 48px;
+  background: #F5A623;
+  color: #2C1810;
+  border: none;
+  border-radius: 28px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(245,166,35,0.3);
+  animation: popIn 0.5s ease-out;
+}
+.start-btn:hover { transform: scale(1.05); }
+
+.hint-text {
+  color: #8B7355;
+  font-size: 12px;
+  margin-top: 16px;
+}
+
+.youni-stage2 {
+  position: absolute;
+  bottom: 20px;
+  left: 8px;
+  transform: none;
+  z-index: 25;
+}
+
+.youni-stage3 {
+  position: absolute;
+  bottom: 10px;
+  left: 8px;
+  transform: scale(0.7);
+  transform-origin: bottom left;
+  z-index: 25;
+}
+
+.youni-stage4 {
+  position: absolute;
+  bottom: 20px;
+  left: 8px;
+  transform: none;
+  z-index: 25;
+}
+
+.youni-stage5 {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  transform: scale(0.5);
+  transform-origin: top left;
+  z-index: 25;
+}
+
+.hidden { display: none !important; }
+
+.return-btn {
+  margin-top: 24px;
+  padding: 12px 32px;
+  background: #F5A623;
+  color: #2C1810;
+  border: none;
+  border-radius: 24px;
+  font-size: 15px;
+  cursor: pointer;
+  animation: popIn 0.5s;
+}
+</style>
+</head>
+<body>
+<div id="app-wrapper">
+
+<!-- ==================== 第一阶段：孵化 ==================== -->
+<div id="stage1" class="stage active">
+  <div class="egg-container" id="eggContainer">
+    <div class="egg" id="egg"></div>
+    <div class="egg-crack" id="eggCrack"></div>
+    <div class="golden-glow" id="goldenGlow"></div>
+    <div class="golden-particles" id="goldenParticles"></div>
+    <div class="light-burst-container" id="lightBurst"></div>
+  </div>
+  <div id="hatchedYouni" class="youni-container"></div>
+  <div id="stage1Bubble" class="bubble hidden" style="left:130px;top:500px;max-width:200px;"></div>
+  <button id="startFirstBtn" class="start-btn hidden" style="position:absolute;bottom:100px;">开始第一次决策</button>
+</div>
+
+<!-- ==================== 第二阶段：偏好采集 ==================== -->
+<div id="stage2" class="stage">
+  <div class="tavern-scene">
+    <div class="tavern-bg-texture"></div>
+    <div class="warm-vignette"></div>
+    <div class="dust-container" id="dustContainer2"></div>
+    <div class="lamp"></div>
+    <div class="blackboard">
+      <div class="blackboard-title">有米的笔记</div>
+      <div id="blackboardContent">辣度：待了解<br>汤类：待了解<br>忌口：无</div>
+    </div>
+    <div class="bar-counter"></div>
+    <div class="prop-chili" id="propChili" style="display:none;">🌶️</div>
+    <div class="prop-bowl" id="propBowl" style="display:none;">🍜</div>
+  </div>
+  <div class="youni-container youni-stage2" id="youniStage2"></div>
+  <div id="stage2Bubble" class="bubble" style="left:130px;top:500px;max-width:200px;"></div>
+  <div class="question-area" id="questionArea">
+    <div class="question-title" id="questionTitle"></div>
+    <div id="questionContent"></div>
+  </div>
+</div>
+
+<!-- ==================== 第三阶段：智能决策 ==================== -->
+<div id="stage3" class="stage">
+  <div class="tavern-scene">
+    <div class="tavern-bg-texture"></div>
+    <div class="warm-vignette"></div>
+    <div class="dust-container" id="dustContainer3"></div>
+    <div class="lamp"></div>
+    <div class="blackboard" style="top:4px;height:auto;font-size:10px;padding:6px 10px;width:auto;min-width:60px;right:8px;left:auto;">
+      <div class="blackboard-title" style="font-size:9px;margin-bottom:2px;">今日运势</div>
+      <div id="weatherBoard" style="font-size:14px;">晴</div>
+    </div>
+    <div class="bar-counter"></div>
+  </div>
+  <div class="youni-container youni-stage3" id="youniStage3"></div>
+  <div id="stage3Bubble" class="bubble" style="left:130px;top:500px;max-width:200px;"></div>
+  <div class="wheel-area" id="wheelArea" style="display:none;">
+    <canvas id="wheelCanvas" width="280" height="280"></canvas>
+    <div class="wheel-pointer" id="wheelPointer">
+      <svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="ps" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.3)"/>
+          </filter>
+        </defs>
+        <polygon points="14,22 6,4 22,4" fill="#F5A623" stroke="#8B4513" stroke-width="1.5" filter="url(#ps)"/>
+        <polygon points="14,18 9,6 19,6" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="wheel-pulse" id="wheelPulse"></div>
+    <div id="wheelBtnArea" style="text-align:center;margin-top:12px;">
+      <button class="spin-btn" id="spinBtn" style="margin-right:6px;">转动转盘</button>
+      <button class="choice-btn" id="reshuffleBtn" style="margin-right:6px;">换一换</button>
+      <button class="choice-btn" id="customPickBtn">我想自己选</button>
+    </div>
+  </div>
+  <div class="input-area" id="inputArea" style="display:none;">
+    <input type="text" class="options-input" id="optionsInput" placeholder="输入选项，如：麻辣烫、寿司、沙拉">
+    <button class="spin-btn" id="analyzeBtn">让有米分析</button>
+  </div>
+  <div class="analyzing-overlay" id="analyzingOverlay">
+    <div class="think-bubble"></div>
+    <div class="think-text" id="thinkText">有米在看黑板...</div>
+  </div>
+  <div class="receipt-overlay" id="receiptOverlay">
+    <div class="receipt">
+      <button class="receipt-close" id="receiptClose">&times;</button>
+      <div class="receipt-title">有米的小馆 - 今日推荐</div>
+      <div class="receipt-result" id="receiptResult"></div>
+      <div style="text-align:center;font-size:13px;color:#5C3A1E;" id="receiptDate"></div>
+      <div class="receipt-note" id="receiptNote"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 第四阶段：反馈 ==================== -->
+<div id="stage4" class="stage">
+  <div class="tavern-scene">
+    <div class="tavern-bg-texture"></div>
+    <div class="warm-vignette"></div>
+    <div class="dust-container" id="dustContainer4"></div>
+    <div class="lamp"></div>
+    <div class="bar-counter"></div>
+  </div>
+  <div class="youni-container youni-stage4" id="youniStage4"></div>
+  <div id="stage4Bubble" class="bubble" style="left:130px;top:500px;max-width:200px;"></div>
+  <div class="feedback-area" id="feedbackArea">
+    <div class="feedback-title" id="feedbackTitle">这顿吃得怎么样？</div>
+    <div class="feedback-btns" id="feedbackBtns">
+      <button class="feedback-btn good" data-rating="good">&#128523;</button>
+      <button class="feedback-btn ok" data-rating="ok">&#128528;</button>
+      <button class="feedback-btn bad" data-rating="bad">&#128555;</button>
+    </div>
+    <div class="attribution-box" id="attributionBox">
+      <p>有米想知道是哪里出了问题...</p>
+      <div class="attribution-options">
+        <span class="att-tag" data-reason="too_spicy">太辣了</span>
+        <span class="att-tag" data-reason="too_bland">太淡</span>
+        <span class="att-tag" data-reason="bad_quality">食材不新鲜</span>
+        <span class="att-tag" data-reason="too_slow">等太久</span>
+        <span class="att-tag" data-reason="not_tasty">不合口味</span>
+        <span class="att-tag" data-reason="other">其他</span>
+      </div>
+      <button class="return-btn" id="confirmBadBtn" style="margin-top:16px;">记下了</button>
+    </div>
+    <button class="return-btn hidden" id="goToBookBtn">查看图鉴</button>
+  </div>
+</div>
+
+<!-- ==================== 第五阶段：图鉴 ==================== -->
+<div id="stage5" class="stage">
+  <div class="tavern-scene">
+    <div class="tavern-bg-texture"></div>
+    <div class="warm-vignette"></div>
+    <div class="dust-container" id="dustContainer5"></div>
+    <div class="lamp"></div>
+    <div class="bar-counter"></div>
+  </div>
+  <div class="youni-container youni-stage5" id="youniStage5"></div>
+  <div id="stage5Bubble" class="bubble" style="left:130px;top:500px;max-width:200px;"></div>
+  <div class="book-container" id="bookContainer">
+    <div class="book" id="bookContent">
+      <div class="book-spine"></div>
+      <div id="bookPage">
+        <div class="silhouette">
+          <div class="silhouette-icon">&#128214;</div>
+          <div class="silhouette-text">还没有解锁任何记录哦~<br>快去让有米帮你决策吧！</div>
+        </div>
+      </div>
+      <div class="book-nav" id="bookNav" style="display:none;">
+        <button id="prevPage">上一页</button>
+        <button id="nextPage">下一页</button>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-menu">
+    <button class="menu-btn" id="backToWheelBtn">再转一次</button>
+    <button class="menu-btn" id="resetBtn">重新开始</button>
+  </div>
+</div>
+
+</div><!-- /app-wrapper -->
+
+<script>
+/* ==================== SVG 有米角色生成 ==================== */
+function createYouniSVG(containerId, options) {
+  options = options || {};
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+
+  var showGlasses = options.glasses !== false;
+  var showApron = options.apron !== false;
+
+  var svgNS = 'http://www.w3.org/2000/svg';
+  var svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('viewBox', '0 0 100 120');
+  svg.setAttribute('width', '100');
+  svg.setAttribute('height', '120');
+
+  // Defs
+  var defs = document.createElementNS(svgNS, 'defs');
+  var filter = document.createElementNS(svgNS, 'filter');
+  filter.setAttribute('id', 'ss_' + containerId.replace(/[^a-z0-9]/gi, ''));
+  filter.setAttribute('x', '-20%'); filter.setAttribute('y', '-20%');
+  filter.setAttribute('width', '140%'); filter.setAttribute('height', '140%');
+  var feDrop = document.createElementNS(svgNS, 'feDropShadow');
+  feDrop.setAttribute('dx', '0'); feDrop.setAttribute('dy', '2');
+  feDrop.setAttribute('stdDeviation', '1.5');
+  feDrop.setAttribute('flood-color', 'rgba(0,0,0,0.15)');
+  filter.appendChild(feDrop);
+  defs.appendChild(filter);
+
+  var blushGrad = document.createElementNS(svgNS, 'radialGradient');
+  blushGrad.setAttribute('id', 'bl_' + containerId.replace(/[^a-z0-9]/gi, ''));
+  var s1 = document.createElementNS(svgNS, 'stop');
+  s1.setAttribute('offset', '0%'); s1.setAttribute('stop-color', '#FFD6D6'); s1.setAttribute('stop-opacity', '0.6');
+  var s2 = document.createElementNS(svgNS, 'stop');
+  s2.setAttribute('offset', '100%'); s2.setAttribute('stop-color', '#FFD6D6'); s2.setAttribute('stop-opacity', '0');
+  blushGrad.appendChild(s1); blushGrad.appendChild(s2);
+  defs.appendChild(blushGrad);
+  svg.appendChild(defs);
+
+  // 耳朵
+  var earL = document.createElementNS(svgNS, 'ellipse');
+  earL.setAttribute('cx', '25'); earL.setAttribute('cy', '16');
+  earL.setAttribute('rx', '10'); earL.setAttribute('ry', '12');
+  earL.setAttribute('fill', '#FFF8F0'); earL.setAttribute('stroke', '#EDE0D4'); earL.setAttribute('stroke-width', '0.5');
+  earL.setAttribute('class', 'youni-ear-l');
+  earL.style.transformOrigin = '25px 28px';
+  earL.style.transition = 'transform 0.3s';
+  svg.appendChild(earL);
+
+  var earInL = document.createElementNS(svgNS, 'ellipse');
+  earInL.setAttribute('cx', '25'); earInL.setAttribute('cy', '17');
+  earInL.setAttribute('rx', '6'); earInL.setAttribute('ry', '7');
+  earInL.setAttribute('fill', '#FFD6D6'); earInL.setAttribute('opacity', '0.5');
+  svg.appendChild(earInL);
+
+  var earR = document.createElementNS(svgNS, 'ellipse');
+  earR.setAttribute('cx', '75'); earR.setAttribute('cy', '16');
+  earR.setAttribute('rx', '10'); earR.setAttribute('ry', '12');
+  earR.setAttribute('fill', '#FFF8F0'); earR.setAttribute('stroke', '#EDE0D4'); earR.setAttribute('stroke-width', '0.5');
+  earR.setAttribute('class', 'youni-ear-r');
+  earR.style.transformOrigin = '75px 28px';
+  earR.style.transition = 'transform 0.3s';
+  svg.appendChild(earR);
+
+  var earInR = document.createElementNS(svgNS, 'ellipse');
+  earInR.setAttribute('cx', '75'); earInR.setAttribute('cy', '17');
+  earInR.setAttribute('rx', '6'); earInR.setAttribute('ry', '7');
+  earInR.setAttribute('fill', '#FFD6D6'); earInR.setAttribute('opacity', '0.5');
+  svg.appendChild(earInR);
+
+  // 身体
+  var body = document.createElementNS(svgNS, 'ellipse');
+  body.setAttribute('cx', '50'); body.setAttribute('cy', '90');
+  body.setAttribute('rx', '30'); body.setAttribute('ry', '22');
+  body.setAttribute('fill', '#FFF8F0'); body.setAttribute('stroke', '#EDE0D4'); body.setAttribute('stroke-width', '0.5');
+  body.setAttribute('filter', 'url(#ss_' + containerId.replace(/[^a-z0-9]/gi, '') + ')');
+  svg.appendChild(body);
+
+  // 脚
+  var footL = document.createElementNS(svgNS, 'ellipse');
+  footL.setAttribute('cx', '38'); footL.setAttribute('cy', '108');
+  footL.setAttribute('rx', '10'); footL.setAttribute('ry', '6');
+  footL.setAttribute('fill', '#FFF8F0'); footL.setAttribute('stroke', '#EDE0D4'); footL.setAttribute('stroke-width', '0.5');
+  svg.appendChild(footL);
+  var footR = document.createElementNS(svgNS, 'ellipse');
+  footR.setAttribute('cx', '62'); footR.setAttribute('cy', '108');
+  footR.setAttribute('rx', '10'); footR.setAttribute('ry', '6');
+  footR.setAttribute('fill', '#FFF8F0'); footR.setAttribute('stroke', '#EDE0D4'); footR.setAttribute('stroke-width', '0.5');
+  svg.appendChild(footR);
+
+  // 围裙
+  if (showApron) {
+    var apronG = document.createElementNS(svgNS, 'g');
+    apronG.setAttribute('class', 'youni-apron-svg');
+    if (options.apronAnimate) { apronG.style.animation = 'apronOn 0.5s ease-out'; }
+    var apronNeck = document.createElementNS(svgNS, 'path');
+    apronNeck.setAttribute('d', 'M 42 70 Q 50 65 58 70');
+    apronNeck.setAttribute('fill', 'none'); apronNeck.setAttribute('stroke', '#F0F0F0'); apronNeck.setAttribute('stroke-width', '2');
+    apronG.appendChild(apronNeck);
+    var apronBody = document.createElementNS(svgNS, 'path');
+    apronBody.setAttribute('d', 'M 35 72 Q 50 68 65 72 L 63 100 Q 50 105 37 100 Z');
+    apronBody.setAttribute('fill', '#F5F5F5'); apronBody.setAttribute('stroke', '#E8E8E8'); apronBody.setAttribute('stroke-width', '0.5');
+    apronG.appendChild(apronBody);
+    var pocket = document.createElementNS(svgNS, 'rect');
+    pocket.setAttribute('x', '43'); pocket.setAttribute('y', '82');
+    pocket.setAttribute('width', '14'); pocket.setAttribute('height', '10');
+    pocket.setAttribute('rx', '3'); pocket.setAttribute('fill', '#E8E8E8');
+    apronG.appendChild(pocket);
+    var bow = document.createElementNS(svgNS, 'path');
+    bow.setAttribute('d', 'M 47 72 Q 42 68 44 72 Q 42 76 47 72 M 53 72 Q 58 68 56 72 Q 58 76 53 72');
+    bow.setAttribute('fill', '#E8E8E8');
+    apronG.appendChild(bow);
+    svg.appendChild(apronG);
+  }
+
+  // 手臂
+  var armL = document.createElementNS(svgNS, 'ellipse');
+  armL.setAttribute('cx', '22'); armL.setAttribute('cy', '85');
+  armL.setAttribute('rx', '8'); armL.setAttribute('ry', '12');
+  armL.setAttribute('fill', '#FFF8F0'); armL.setAttribute('stroke', '#EDE0D4'); armL.setAttribute('stroke-width', '0.5');
+  armL.setAttribute('class', 'youni-arm-l');
+  armL.style.transformOrigin = '30px 85px';
+  armL.style.transition = 'transform 0.3s';
+  svg.appendChild(armL);
+  var armR = document.createElementNS(svgNS, 'ellipse');
+  armR.setAttribute('cx', '78'); armR.setAttribute('cy', '85');
+  armR.setAttribute('rx', '8'); armR.setAttribute('ry', '12');
+  armR.setAttribute('fill', '#FFF8F0'); armR.setAttribute('stroke', '#EDE0D4'); armR.setAttribute('stroke-width', '0.5');
+  armR.setAttribute('class', 'youni-arm-r');
+  armR.style.transformOrigin = '70px 85px';
+  armR.style.transition = 'transform 0.3s';
+  svg.appendChild(armR);
+
+  // 头
+  var head = document.createElementNS(svgNS, 'ellipse');
+  head.setAttribute('cx', '50'); head.setAttribute('cy', '40');
+  head.setAttribute('rx', '30'); head.setAttribute('ry', '28');
+  head.setAttribute('fill', '#FFF8F0'); head.setAttribute('stroke', '#EDE0D4'); head.setAttribute('stroke-width', '0.5');
+  head.setAttribute('filter', 'url(#ss_' + containerId.replace(/[^a-z0-9]/gi, '') + ')');
+  svg.appendChild(head);
+
+  // 腮红
+  var bL = document.createElementNS(svgNS, 'ellipse');
+  bL.setAttribute('cx', '28'); bL.setAttribute('cy', '42');
+  bL.setAttribute('rx', '8'); bL.setAttribute('ry', '5');
+  bL.setAttribute('fill', 'url(#bl_' + containerId.replace(/[^a-z0-9]/gi, '') + ')');
+  svg.appendChild(bL);
+  var bR = document.createElementNS(svgNS, 'ellipse');
+  bR.setAttribute('cx', '72'); bR.setAttribute('cy', '42');
+  bR.setAttribute('rx', '8'); bR.setAttribute('ry', '5');
+  bR.setAttribute('fill', 'url(#bl_' + containerId.replace(/[^a-z0-9]/gi, '') + ')');
+  svg.appendChild(bR);
+
+  // 眼睛
+  var eyeL = document.createElementNS(svgNS, 'ellipse');
+  eyeL.setAttribute('cx', '38'); eyeL.setAttribute('cy', '35');
+  eyeL.setAttribute('rx', '5'); eyeL.setAttribute('ry', '6');
+  eyeL.setAttribute('fill', '#2C1810'); eyeL.setAttribute('class', 'youni-eye-l');
+  eyeL.style.transformOrigin = '38px 35px';
+  eyeL.style.animation = 'blink 4s infinite';
+  svg.appendChild(eyeL);
+  var eyeR = document.createElementNS(svgNS, 'ellipse');
+  eyeR.setAttribute('cx', '62'); eyeR.setAttribute('cy', '35');
+  eyeR.setAttribute('rx', '5'); eyeR.setAttribute('ry', '6');
+  eyeR.setAttribute('fill', '#2C1810'); eyeR.setAttribute('class', 'youni-eye-r');
+  eyeR.style.transformOrigin = '62px 35px';
+  eyeR.style.animation = 'blink 4s infinite';
+  svg.appendChild(eyeR);
+
+  // 高光
+  svg.appendChild(makeC(svgNS, 40, 33, 2, '#fff'));
+  svg.appendChild(makeC(svgNS, 36, 37, 1, '#fff'));
+  svg.appendChild(makeC(svgNS, 64, 33, 2, '#fff'));
+  svg.appendChild(makeC(svgNS, 60, 37, 1, '#fff'));
+
+  // 鼻子
+  var nose = document.createElementNS(svgNS, 'ellipse');
+  nose.setAttribute('cx', '50'); nose.setAttribute('cy', '40');
+  nose.setAttribute('rx', '3'); nose.setAttribute('ry', '2.5');
+  nose.setAttribute('fill', '#FFB6C1');
+  svg.appendChild(nose);
+
+  // 嘴
+  var mouth = document.createElementNS(svgNS, 'path');
+  mouth.setAttribute('d', 'M 44 44 Q 50 48 56 44');
+  mouth.setAttribute('fill', 'none'); mouth.setAttribute('stroke', '#D4A574'); mouth.setAttribute('stroke-width', '1.5');
+  mouth.setAttribute('stroke-linecap', 'round');
+  mouth.setAttribute('class', 'youni-mouth-path');
+  mouth.style.transition = 'd 0.3s';
+  svg.appendChild(mouth);
+
+  // 眼镜
+  if (showGlasses) {
+    var gG = document.createElementNS(svgNS, 'g');
+    gG.setAttribute('class', 'youni-glasses-svg');
+    if (options.glassesAnimate) { gG.style.animation = 'glassesOn 0.6s ease-out'; }
+    gG.appendChild(makeCirc(svgNS, 38, 35, 12, 'rgba(255,255,255,0.1)', '#8B4513', 2));
+    gG.appendChild(makeCirc(svgNS, 62, 35, 12, 'rgba(255,255,255,0.1)', '#8B4513', 2));
+    var bridge = document.createElementNS(svgNS, 'path');
+    bridge.setAttribute('d', 'M 49 34 Q 50 32 51 34');
+    bridge.setAttribute('fill', 'none'); bridge.setAttribute('stroke', '#8B4513'); bridge.setAttribute('stroke-width', '2');
+    gG.appendChild(bridge);
+    var tL = document.createElementNS(svgNS, 'line');
+    tL.setAttribute('x1', '26'); tL.setAttribute('y1', '33');
+    tL.setAttribute('x2', '22'); tL.setAttribute('y2', '34');
+    tL.setAttribute('stroke', '#8B4513'); tL.setAttribute('stroke-width', '1.5');
+    gG.appendChild(tL);
+    var tR = document.createElementNS(svgNS, 'line');
+    tR.setAttribute('x1', '74'); tR.setAttribute('y1', '33');
+    tR.setAttribute('x2', '78'); tR.setAttribute('y2', '34');
+    tR.setAttribute('stroke', '#8B4513'); tR.setAttribute('stroke-width', '1.5');
+    gG.appendChild(tR);
+    svg.appendChild(gG);
+  }
+
+  container.appendChild(svg);
+  return svg;
+}
+
+function makeC(ns, cx, cy, r, fill) {
+  var c = document.createElementNS(ns, 'circle');
+  c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', r); c.setAttribute('fill', fill);
+  return c;
+}
+function makeCirc(ns, cx, cy, r, fill, stroke, sw) {
+  var c = document.createElementNS(ns, 'circle');
+  c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', r); c.setAttribute('fill', fill);
+  c.setAttribute('stroke', stroke); c.setAttribute('stroke-width', sw);
+  return c;
+}
+
+/* ==================== 浮尘粒子 ==================== */
+function initDustParticles(containerId) {
+  var container = document.getElementById(containerId);
+  if (!container || container._dustInit) return;
+  container._dustInit = true;
+  var colors = ['#F5A623', '#D4A574', '#FFD700', '#FFF8F0', '#C49A6C'];
+  function spawnDust() {
+    var count = 15 + Math.floor(Math.random() * 6);
+    for (var i = 0; i < count; i++) {
+      (function(idx) {
+        var p = document.createElement('div');
+        p.className = 'dust-particle';
+        var size = 2 + Math.random() * 3;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.top = Math.random() * 100 + '%';
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        var dur = 6 + Math.random() * 8;
+        p.style.setProperty('--dur', dur + 's');
+        p.style.setProperty('--dx', (Math.random() * 40 - 20) + 'px');
+        p.style.setProperty('--dy', (-30 - Math.random() * 50) + 'px');
+        p.style.animationDelay = (Math.random() * dur) + 's';
+        container.appendChild(p);
+        setTimeout(function() { p.remove(); spawnDust(); }, (dur + Math.random() * dur) * 1000);
+      })(i);
+    }
+  }
+  spawnDust();
+}
+
+/* ==================== 全局状态与工具 ==================== */
+var state = {
+  preferences: { spicy: null, soup: null, taboo: '' },
+  history: [],
+  unlocked: 0,
+  currentResult: null,
+  currentOptions: [],
+  currentWeights: [],
+  currentWeather: '',
+  currentPage: 0
+};
+
+var STORAGE_KEY = 'youni_data';
+
+function loadData() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      var data = JSON.parse(raw);
+      state.preferences = data.preferences || state.preferences;
+      state.history = data.history || [];
+      state.unlocked = data.unlocked || 0;
+    }
+  } catch (e) { console.warn('loadData error', e); }
+}
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      preferences: state.preferences,
+      history: state.history,
+      unlocked: state.unlocked
+    }));
+  } catch (e) { console.warn('saveData error', e); }
+}
+
+function getToday() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function getWeather() {
+  var day = new Date().getDate();
+  return day % 2 === 1 ? '晴' : '雨';
+}
+
+/* 打字机效果 */
+var activeTypewriters = new Map();
+
+function typeText(element, text, speed) {
+  speed = speed || 50;
+  return new Promise(function(resolve) {
+    if (activeTypewriters.has(element)) {
+      var oldCtrl = activeTypewriters.get(element);
+      oldCtrl.cancelled = true;
+      if (oldCtrl.timerId) clearTimeout(oldCtrl.timerId);
+      if (oldCtrl.resolve) oldCtrl.resolve();
+      activeTypewriters.delete(element);
+    }
+    element.textContent = '';
+    element.classList.add('typing');
+    var i = 0;
+    var ctrl = { cancelled: false, timerId: null, resolve: resolve };
+    activeTypewriters.set(element, ctrl);
+    function step() {
+      if (ctrl.cancelled) return;
+      if (i < text.length) {
+        element.textContent += text.charAt(i);
+        i++;
+        ctrl.timerId = setTimeout(step, speed);
+      } else {
+        element.classList.remove('typing');
+        if (activeTypewriters.get(element) === ctrl) activeTypewriters.delete(element);
+        resolve();
+      }
+    }
+    step();
+  });
+}
+
+/* 场景切换 */
+var transitioning = false;
+function showStage(id) {
+  if (transitioning) return;
+  var currentActive = document.querySelector('.stage.active');
+  var nextStage = document.getElementById(id);
+  if (!nextStage || currentActive === nextStage) return;
+
+  if (currentActive && currentActive.id !== 'stage1') {
+    transitioning = true;
+    currentActive.classList.add('slide-out');
+    nextStage.style.display = 'flex';
+    nextStage.classList.add('active');
+    nextStage.classList.add('slide-in');
+    currentActive.addEventListener('animationend', function handler() {
+      currentActive.removeEventListener('animationend', handler);
+      currentActive.classList.remove('slide-out', 'active');
+      currentActive.style.display = 'none';
+      transitioning = false;
+    }, { once: true });
+    nextStage.addEventListener('animationend', function handler2() {
+      nextStage.removeEventListener('animationend', handler2);
+      nextStage.classList.remove('slide-in');
+    }, { once: true });
+  } else {
+    document.querySelectorAll('.stage').forEach(function(s) { s.classList.remove('active'); });
+    nextStage.classList.add('active');
+  }
+}
+
+function createStars(container, count) {
+  count = count || 6;
+  for (var i = 0; i < count; i++) {
+    var star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = (20 + Math.random() * 80) + 'px';
+    star.style.top = (-20 + Math.random() * 100) + 'px';
+    star.style.animationDelay = (i * 0.1) + 's';
+    container.appendChild(star);
+    (function(s) { setTimeout(function() { s.remove(); }, 1000); })(star);
+  }
+}
+
+function createWarmFlash(stageId) {
+  var stage = document.getElementById(stageId);
+  if (!stage) return;
+  var flash = document.createElement('div');
+  flash.className = 'warm-flash-overlay';
+  stage.appendChild(flash);
+  setTimeout(function() { flash.remove(); }, 1000);
+}
+
+function createSadOverlay(stageId) {
+  var existing = document.getElementById('sadOverlay');
+  if (existing) existing.remove();
+  var stage = document.getElementById(stageId);
+  if (!stage) return;
+  var overlay = document.createElement('div');
+  overlay.className = 'sad-bg-overlay';
+  overlay.id = 'sadOverlay';
+  stage.appendChild(overlay);
+}
+
+function removeSadOverlay() {
+  var overlay = document.getElementById('sadOverlay');
+  if (overlay) overlay.remove();
+}
+
+/* ==================== 菜品数据库 ==================== */
+var DISH_DB = {
+  rainy: ['麻辣烫','酸辣粉','火锅','拉面','热汤面','关东煮','牛肉面','馄饨'],
+  sunny: ['沙拉','寿司','凉面','凉皮','冰粉','轻食碗','三明治','冷面'],
+  spicy: ['麻辣烫','火锅','酸辣粉','麻辣香锅','重庆小面','剁椒鱼头','辣子鸡'],
+  mild: ['白粥','清汤面','蒸蛋','小馄饨','煲仔饭','广式茶点','云吞面'],
+  soup: ['拉面','馄饨','汤饭','粥品','麻辣烫','牛肉汤','酸辣汤'],
+  nosoup: ['炒饭','炒面','煎饼','汉堡','烧烤','盖浇饭','煲仔饭']
+};
+
+function generateRecommendations() {
+  var spicy = state.preferences.spicy, soup = state.preferences.soup, taboo = state.preferences.taboo;
+  var weather = state.currentWeather;
+  var pool = [];
+  var weatherKey = weather === '雨' ? 'rainy' : 'sunny';
+  pool = pool.concat(DISH_DB[weatherKey]);
+  var spicyKey = spicy === 'high' ? 'spicy' : 'mild';
+  pool = pool.concat(DISH_DB[spicyKey]);
+  var soupKey = soup === 'yes' ? 'soup' : 'nosoup';
+  pool = pool.concat(DISH_DB[soupKey]);
+
+  var counts = {};
+  pool.forEach(function(dish) { counts[dish] = (counts[dish] || 0) + 1; });
+  var unique = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; });
+
+  if (taboo) { unique = unique.filter(function(d) { return !d.includes(taboo); }); }
+
+  var allDishes = [];
+  Object.values(DISH_DB).forEach(function(arr) { allDishes = allDishes.concat(arr); });
+  var seen = new Set(unique);
+  var extras = allDishes.filter(function(d) { return !seen.has(d) && (!taboo || !d.includes(taboo)); });
+  for (var i = extras.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = extras[i]; extras[i] = extras[j]; extras[j] = tmp;
+  }
+  var result = unique.slice();
+  while (result.length < 5 && extras.length > 0) { result.push(extras.pop()); }
+  for (var k = result.length - 1; k > 0; k--) {
+    var m = Math.floor(Math.random() * (k + 1));
+    var t = result[k]; result[k] = result[m]; result[m] = t;
+  }
+  return result.slice(0, 5);
+}
+
+/* ==================== 第一阶段：孵化 ==================== */
+var stage1 = document.getElementById('stage1');
+var eggContainer = document.getElementById('eggContainer');
+var egg = document.getElementById('egg');
+var goldenGlow = document.getElementById('goldenGlow');
+var goldenParticles = document.getElementById('goldenParticles');
+var lightBurst = document.getElementById('lightBurst');
+var hatchedYouni = document.getElementById('hatchedYouni');
+var stage1Bubble = document.getElementById('stage1Bubble');
+var startFirstBtn = document.getElementById('startFirstBtn');
+var stage1Clicked = false;
+
+stage1.addEventListener('click', async function() {
+  if (stage1Clicked) return;
+  stage1Clicked = true;
+
+  eggContainer.classList.add('egg-cracked');
+  goldenGlow.classList.add('active');
+  spawnEnhancedGoldenParticles();
+  spawnLightBurst();
+  await wait(500);
+
+  var appWrapper = document.getElementById('app-wrapper');
+  appWrapper.style.animation = 'hatchShake 0.4s ease-in-out';
+  appWrapper.addEventListener('animationend', function() { appWrapper.style.animation = ''; }, { once: true });
+
+  eggContainer.classList.add('egg-hatched');
+  await wait(600);
+
+  eggContainer.style.display = 'none';
+  createYouniSVG('hatchedYouni', { glasses: false, apron: false });
+  hatchedYouni.classList.add('show');
+  await wait(1000);
+
+  hatchedYouni.classList.remove('show');
+  hatchedYouni.classList.add('shrink');
+  await wait(500);
+
+  createYouniSVG('hatchedYouni', { glasses: true, glassesAnimate: true, apron: false });
+  await wait(600);
+
+  createYouniSVG('hatchedYouni', { glasses: true, apron: true, apronAnimate: true });
+  await wait(600);
+
+  stage1Bubble.classList.remove('hidden');
+  await typeText(stage1Bubble, '大人好！我是有米，从今天起负责帮您决定吃什么。');
+  await wait(500);
+
+  startFirstBtn.classList.remove('hidden');
+});
+
+startFirstBtn.addEventListener('click', function() {
+  showStage('stage2');
+  initStage2();
+});
+
+function wait(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
+
+function spawnEnhancedGoldenParticles() {
+  var container = goldenParticles;
+  var colors = ['#FFD700', '#FFF8F0', '#F5A623', '#FFD700', '#FFF8F0'];
+  var count = 24;
+  for (var i = 0; i < count; i++) {
+    (function(idx) {
+      var isStar = idx % 3 === 0;
+      var particle = document.createElement('div');
+      particle.className = isStar ? 'golden-star-particle' : 'golden-particle';
+      if (!isStar) {
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.boxShadow = '0 0 6px ' + colors[Math.floor(Math.random() * colors.length)];
+        var sz = 3 + Math.random() * 4;
+        particle.style.width = sz + 'px'; particle.style.height = sz + 'px';
+      } else {
+        particle.style.background = '#FFD700';
+        particle.style.width = '8px'; particle.style.height = '8px';
+      }
+      var angle = (Math.PI * 2 * idx) / count + (Math.random() - 0.5) * 0.3;
+      var dist = 40 + Math.random() * 70;
+      particle.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+      particle.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+      particle.style.animationDuration = (0.8 + Math.random() * 0.6) + 's';
+      container.appendChild(particle);
+      setTimeout(function() { particle.remove(); }, 1500);
+    })(i);
+  }
+}
+
+function spawnLightBurst() {
+  var container = lightBurst;
+  var count = 12;
+  for (var i = 0; i < count; i++) {
+    (function(idx) {
+      var ray = document.createElement('div');
+      ray.className = 'light-ray';
+      var angle = (360 * idx) / count;
+      ray.style.setProperty('--angle', angle + 'deg');
+      ray.style.transform = 'rotate(' + angle + 'deg)';
+      ray.style.animationDelay = (idx * 0.05) + 's';
+      ray.style.height = (40 + Math.random() * 30) + 'px';
+      ray.style.width = (2 + Math.random() * 2) + 'px';
+      container.appendChild(ray);
+      setTimeout(function() { ray.remove(); }, 1200);
+    })(i);
+  }
+}
+
+/* ==================== 第二阶段：偏好采集 ==================== */
+var stage2Bubble = document.getElementById('stage2Bubble');
+var questionTitle = document.getElementById('questionTitle');
+var questionContent = document.getElementById('questionContent');
+var blackboardContent = document.getElementById('blackboardContent');
+var propChili = document.getElementById('propChili');
+var propBowl = document.getElementById('propBowl');
+
+function updateBlackboard() {
+  var s = state.preferences.spicy !== null ? (state.preferences.spicy === 'high' ? '爱吃辣' : '怕辣') : '待了解';
+  var p = state.preferences.soup !== null ? (state.preferences.soup === 'yes' ? '爱喝汤' : '不喝汤') : '待了解';
+  var t = state.preferences.taboo || '无';
+  blackboardContent.innerHTML = '辣度：' + s + '<br>汤类：' + p + '<br>忌口：' + t;
+}
+
+async function initStage2() {
+  createYouniSVG('youniStage2', { glasses: true, apron: true });
+  updateBlackboard();
+  initDustParticles('dustContainer2');
+  await askQuestion1();
+}
+
+async function askQuestion1() {
+  propChili.style.display = 'block';
+  propBowl.style.display = 'none';
+  questionTitle.textContent = '问题一：辣度偏好';
+  questionContent.innerHTML = '<div style="color:#FFF8F0;font-size:14px;margin-bottom:16px;">有米端来一颗辣椒糖...</div><div class="choice-buttons"><button class="choice-btn" id="q1a">咬开它</button><button class="choice-btn" id="q1b">只舔一下</button></div>';
+  await typeText(stage2Bubble, '大人，您敢咬开这颗辣椒糖吗？');
+  document.getElementById('q1a').addEventListener('click', function() {
+    state.preferences.spicy = 'high'; updateBlackboard(); askQuestion2();
+  });
+  document.getElementById('q1b').addEventListener('click', function() {
+    state.preferences.spicy = 'low'; updateBlackboard(); askQuestion2();
+  });
+}
+
+async function askQuestion2() {
+  propChili.style.display = 'none';
+  propBowl.style.display = 'block';
+  questionTitle.textContent = '问题二：汤类偏好';
+  questionContent.innerHTML = '<div style="color:#FFF8F0;font-size:14px;margin-bottom:16px;">有米端出一碗热汤...</div><div class="choice-buttons"><button class="choice-btn" id="q2a">会喝完</button><button class="choice-btn" id="q2b">不喝了</button></div>';
+  await typeText(stage2Bubble, '大人，店里的汤您会喝完吗？');
+  document.getElementById('q2a').addEventListener('click', function() {
+    state.preferences.soup = 'yes'; updateBlackboard(); askQuestion3();
+  });
+  document.getElementById('q2b').addEventListener('click', function() {
+    state.preferences.soup = 'no'; updateBlackboard(); askQuestion3();
+  });
+}
+
+async function askQuestion3() {
+  propBowl.style.display = 'none';
+  questionTitle.textContent = '问题三：忌口';
+  questionContent.innerHTML = '<div style="color:#FFF8F0;font-size:14px;margin-bottom:16px;">有什么是不吃的吗？</div><input type="text" class="taboo-input" id="tabooInput" placeholder="例如：芹菜、香菜"><div style="margin-top:12px;"><button class="skip-btn" id="skipTaboo">跳过</button><button class="choice-btn" id="confirmTaboo" style="margin-left:10px;padding:8px 20px;">确认</button></div>';
+  await typeText(stage2Bubble, '大人有什么忌口吗？告诉有米，有米会记住的。');
+  var input = document.getElementById('tabooInput');
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('confirmTaboo').click(); }
+  });
+  document.getElementById('skipTaboo').addEventListener('click', function() { finishStage2(); });
+  document.getElementById('confirmTaboo').addEventListener('click', function() {
+    state.preferences.taboo = input.value.trim(); updateBlackboard(); finishStage2();
+  });
+}
+
+async function finishStage2() {
+  questionContent.innerHTML = '';
+  questionTitle.textContent = '';
+  await typeText(stage2Bubble, '有米大概了解大人了！我们开始第一次决策吧。');
+  await wait(600);
+  var btn = document.createElement('button');
+  btn.className = 'start-btn'; btn.textContent = '开始第一次决策'; btn.style.marginTop = '20px';
+  btn.onclick = function() { saveData(); showStage('stage3'); initStage3(); };
+  questionContent.appendChild(btn);
+}
+
+/* ==================== 第三阶段：智能决策 ==================== */
+var stage3Bubble = document.getElementById('stage3Bubble');
+var wheelArea = document.getElementById('wheelArea');
+var wheelCanvas = document.getElementById('wheelCanvas');
+var inputArea = document.getElementById('inputArea');
+var optionsInput = document.getElementById('optionsInput');
+var analyzeBtn = document.getElementById('analyzeBtn');
+var spinBtn = document.getElementById('spinBtn');
+var reshuffleBtn = document.getElementById('reshuffleBtn');
+var customPickBtn = document.getElementById('customPickBtn');
+var analyzingOverlay = document.getElementById('analyzingOverlay');
+var thinkText = document.getElementById('thinkText');
+var receiptOverlay = document.getElementById('receiptOverlay');
+var receiptResult = document.getElementById('receiptResult');
+var receiptDate = document.getElementById('receiptDate');
+var receiptNote = document.getElementById('receiptNote');
+var weatherBoard = document.getElementById('weatherBoard');
+var wheelPulse = document.getElementById('wheelPulse');
+
+var wheelRotation = 0;
+var wheelSpinning = false;
+var WHEEL_COLORS = ['#E88D3C', '#D4A574', '#C49A6C', '#B8956A', '#A88550', '#E0A060', '#D09050', '#C08040'];
+
+function initStage3() {
+  createYouniSVG('youniStage3', { glasses: true, apron: true });
+  initDustParticles('dustContainer3');
+  state.currentWeather = getWeather();
+  weatherBoard.textContent = state.currentWeather + (state.currentWeather === '晴' ? ' 🌞' : ' 🌧️');
+  var recommendations = generateRecommendations();
+  state.currentOptions = recommendations;
+  calculateWeights();
+  wheelArea.style.display = 'block';
+  inputArea.style.display = 'none';
+  drawWheel();
+  spinBtn.style.display = 'inline-block'; spinBtn.disabled = false;
+  reshuffleBtn.style.display = 'inline-block';
+  customPickBtn.style.display = 'inline-block';
+  spinBtn.onclick = spinWheel;
+  reshuffleBtn.onclick = function() {
+    var recs = generateRecommendations(); state.currentOptions = recs; calculateWeights(); drawWheel();
+    typeText(stage3Bubble, '有米帮大人换了一批推荐，看看有没有喜欢的？');
+  };
+  customPickBtn.onclick = function() {
+    wheelArea.style.display = 'none'; inputArea.style.display = 'block';
+    optionsInput.value = ''; analyzeBtn.textContent = '让有米分析'; analyzeBtn.disabled = false;
+  };
+  typeText(stage3Bubble, '大人，有米根据您的口味推荐了这些，要不要试试？');
+}
+
+async function onAnalyzeClick() {
+  var raw = optionsInput.value.trim();
+  if (!raw) return;
+  var options = raw.split(/[,，、\s]+/).map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+  if (options.length < 2) { typeText(stage3Bubble, '大人至少给有米两个选项嘛...'); return; }
+  state.currentOptions = options;
+  analyzeBtn.disabled = true;
+  var youniEl = document.getElementById('youniStage3');
+  analyzingOverlay.classList.add('show');
+  youniEl.classList.add('youni-thinking');
+  await wait(800);
+  thinkText.textContent = '有米在托下巴思考...';
+  await wait(800);
+  thinkText.textContent = '有米在算权重...';
+  await wait(600);
+  analyzingOverlay.classList.remove('show');
+  youniEl.classList.remove('youni-thinking');
+  calculateWeights();
+  inputArea.style.display = 'none'; wheelArea.style.display = 'block'; drawWheel();
+  var explain = generateExplanation();
+  await typeText(stage3Bubble, explain);
+  spinBtn.style.display = 'inline-block'; spinBtn.disabled = false;
+  reshuffleBtn.style.display = 'none'; customPickBtn.style.display = 'none';
+  spinBtn.onclick = spinWheel;
+}
+
+analyzeBtn.addEventListener('click', onAnalyzeClick);
+optionsInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); onAnalyzeClick(); }
+});
+
+function calculateWeights() {
+  var opts = state.currentOptions;
+  var weights = opts.map(function(opt, i) {
+    var w = 1.0;
+    w += (opts.length - i) * 0.15;
+    if (state.currentWeather === '雨') {
+      if (opt.includes('汤') || opt.includes('火锅') || opt.includes('面')) w += 0.4;
+      if (opt.includes('冰') || opt.includes('凉') || opt.includes('沙拉')) w -= 0.3;
+    } else {
+      if (opt.includes('凉') || opt.includes('冰') || opt.includes('沙拉')) w += 0.3;
+    }
+    if (state.preferences.spicy === 'high' && (opt.includes('辣') || opt.includes('火锅') || opt.includes('麻辣烫'))) w += 0.5;
+    if (state.preferences.spicy === 'low' && (opt.includes('辣') || opt.includes('火锅'))) w -= 0.4;
+    if (state.preferences.soup === 'yes' && (opt.includes('汤') || opt.includes('面') || opt.includes('粥'))) w += 0.3;
+    if (state.preferences.soup === 'no' && opt.includes('汤')) w -= 0.2;
+    if (state.preferences.taboo && opt.includes(state.preferences.taboo)) w = 0.1;
+    return Math.max(0.1, w);
+  });
+  state.currentWeights = weights;
+}
+
+function generateExplanation() {
+  var maxW = Math.max.apply(null, state.currentWeights);
+  var maxIdx = state.currentWeights.indexOf(maxW);
+  var maxOpt = state.currentOptions[maxIdx];
+  var reasons = [];
+  if (maxIdx === 0) reasons.push('第一个选项通常是大人心里的首选');
+  if (state.currentWeather === '雨') reasons.push('今天下雨，有米觉得热乎的更好');
+  else reasons.push('今天天气不错');
+  if (state.preferences.spicy === 'high') reasons.push('大人爱吃辣');
+  if (state.preferences.soup === 'yes') reasons.push('大人爱喝汤');
+  return '「' + maxOpt + '」扇区最大，因为' + reasons[0] + '。';
+}
+
+function getContrastColor(hexColor) {
+  var r = parseInt(hexColor.slice(1, 3), 16);
+  var g = parseInt(hexColor.slice(3, 5), 16);
+  var b = parseInt(hexColor.slice(5, 7), 16);
+  var brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness > 150 ? '#2C1810' : '#FFF8F0';
+}
+
+function drawWheel() {
+  var ctx = wheelCanvas.getContext('2d');
+  var w = wheelCanvas.width, h = wheelCanvas.height;
+  var cx = w / 2, cy = h / 2;
+  var radius = Math.min(w, h) / 2 - 10;
+  var opts = state.currentOptions;
+  var weights = state.currentWeights;
+  var totalWeight = weights.reduce(function(a, b) { return a + b; }, 0);
+  ctx.clearRect(0, 0, w, h); ctx.save();
+  ctx.beginPath(); ctx.arc(cx, cy, radius + 6, 0, Math.PI * 2);
+  ctx.fillStyle = '#8B4513'; ctx.fill();
+  for (var ti = 0; ti < 20; ti++) {
+    var ta = (Math.PI * 2 * ti) / 20;
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(ta) * (radius + 2), cy + Math.sin(ta) * (radius + 2));
+    ctx.lineTo(cx + Math.cos(ta) * (radius + 5), cy + Math.sin(ta) * (radius + 5));
+    ctx.strokeStyle = '#A0522D'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+  var startAngle = -Math.PI / 2;
+  opts.forEach(function(opt, i) {
+    var sliceAngle = (weights[i] / totalWeight) * Math.PI * 2;
+    var endAngle = startAngle + sliceAngle;
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, startAngle, endAngle); ctx.closePath();
+    ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length]; ctx.fill();
+    ctx.strokeStyle = '#FFF8F0'; ctx.lineWidth = 2; ctx.stroke();
+    var midAngle = startAngle + sliceAngle / 2;
+    var textR = radius * 0.65;
+    var tx = cx + Math.cos(midAngle) * textR;
+    var ty = cy + Math.sin(midAngle) * textR;
+    ctx.save(); ctx.translate(tx, ty); ctx.rotate(midAngle + Math.PI / 2);
+    ctx.fillStyle = getContrastColor(WHEEL_COLORS[i % WHEEL_COLORS.length]);
+    ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    var display = opt;
+    var angleDeg = (sliceAngle / Math.PI) * 180;
+    if (angleDeg >= 60) { if (display.length > 6) display = display.slice(0, 5) + '...'; }
+    else { if (display.length > 3) display = display.slice(0, 3) + '...'; }
+    ctx.fillText(display, 0, 0); ctx.restore();
+    startAngle = endAngle;
+  });
+  ctx.beginPath(); ctx.arc(cx, cy, 18, 0, Math.PI * 2);
+  ctx.fillStyle = '#FFF8F0'; ctx.fill(); ctx.strokeStyle = '#8B4513'; ctx.lineWidth = 3; ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+  ctx.fillStyle = '#F5A623'; ctx.fill();
+  ctx.restore();
+}
+
+function highlightWheelSector(winnerIdx) {
+  var ctx = wheelCanvas.getContext('2d');
+  var w = wheelCanvas.width, h = wheelCanvas.height;
+  var cx = w / 2, cy = h / 2;
+  var radius = Math.min(w, h) / 2 - 10;
+  var opts = state.currentOptions;
+  var weights = state.currentWeights;
+  var totalWeight = weights.reduce(function(a, b) { return a + b; }, 0);
+  ctx.clearRect(0, 0, w, h); ctx.save();
+  ctx.translate(cx, cy); ctx.rotate(wheelRotation); ctx.translate(-cx, -cy);
+  ctx.beginPath(); ctx.arc(cx, cy, radius + 6, 0, Math.PI * 2);
+  ctx.fillStyle = '#8B4513'; ctx.fill();
+  for (var ti = 0; ti < 20; ti++) {
+    var ta = (Math.PI * 2 * ti) / 20;
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(ta) * (radius + 2), cy + Math.sin(ta) * (radius + 2));
+    ctx.lineTo(cx + Math.cos(ta) * (radius + 5), cy + Math.sin(ta) * (radius + 5));
+    ctx.strokeStyle = '#A0522D'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+  var startAngle = -Math.PI / 2;
+  opts.forEach(function(opt, i) {
+    var sliceAngle = (weights[i] / totalWeight) * Math.PI * 2;
+    var endAngle = startAngle + sliceAngle;
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, startAngle, endAngle); ctx.closePath();
+    if (i === winnerIdx) {
+      ctx.fillStyle = '#FFD700'; ctx.shadowColor = 'rgba(255,215,0,0.6)'; ctx.shadowBlur = 20;
+    } else {
+      ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length]; ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
+    }
+    ctx.fill(); ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
+    if (i === winnerIdx) { ctx.strokeStyle = '#F5A623'; ctx.lineWidth = 4; }
+    else { ctx.strokeStyle = '#FFF8F0'; ctx.lineWidth = 2; }
+    ctx.stroke();
+    var midAngle = startAngle + sliceAngle / 2;
+    var textR = radius * 0.65;
+    var tx = cx + Math.cos(midAngle) * textR;
+    var ty = cy + Math.sin(midAngle) * textR;
+    ctx.save(); ctx.translate(tx, ty); ctx.rotate(midAngle + Math.PI / 2);
+    var bgColor = i === winnerIdx ? '#FFD700' : WHEEL_COLORS[i % WHEEL_COLORS.length];
+    ctx.fillStyle = getContrastColor(bgColor);
+    ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    var display = opt;
+    var angleDeg = (sliceAngle / Math.PI) * 180;
+    if (angleDeg >= 60) { if (display.length > 6) display = display.slice(0, 5) + '...'; }
+    else { if (display.length > 3) display = display.slice(0, 3) + '...'; }
+    ctx.fillText(display, 0, 0); ctx.restore();
+    startAngle = endAngle;
+  });
+  ctx.beginPath(); ctx.arc(cx, cy, 18, 0, Math.PI * 2);
+  ctx.fillStyle = '#FFF8F0'; ctx.fill(); ctx.strokeStyle = '#8B4513'; ctx.lineWidth = 3; ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+  ctx.fillStyle = '#F5A623'; ctx.fill();
+  ctx.restore();
+  wheelPulse.classList.add('active');
+}
+
+function spinWheel() {
+  if (wheelSpinning) return;
+  wheelSpinning = true; spinBtn.disabled = true; wheelPulse.classList.remove('active');
+  var opts = state.currentOptions;
+  var weights = state.currentWeights;
+  var totalWeight = weights.reduce(function(a, b) { return a + b; }, 0);
+  var rand = Math.random() * totalWeight;
+  var winnerIdx = 0;
+  for (var i = 0; i < weights.length; i++) { rand -= weights[i]; if (rand <= 0) { winnerIdx = i; break; } }
+  var startAngle = -Math.PI / 2;
+  var targetAngle = 0;
+  for (var j = 0; j < opts.length; j++) {
+    var sliceAngle = (weights[j] / totalWeight) * Math.PI * 2;
+    if (j === winnerIdx) { targetAngle = startAngle + sliceAngle / 2; break; }
+    startAngle += sliceAngle;
+  }
+  var extraSpins = 5 + Math.random() * 3;
+  var currentNormalized = wheelRotation % (Math.PI * 2);
+  var delta = (-Math.PI / 2 - targetAngle - currentNormalized) + extraSpins * Math.PI * 2;
+  while (delta < Math.PI * 4) delta += Math.PI * 2;
+  var duration = 3000;
+  var startTime = performance.now();
+  var startRot = wheelRotation;
+
+  function animate(now) {
+    var elapsed = now - startTime;
+    var t = Math.min(elapsed / duration, 1);
+    var ease = 1 - Math.pow(1 - t, 3);
+    wheelRotation = startRot + delta * ease;
+    var ctx = wheelCanvas.getContext('2d');
+    var w = wheelCanvas.width, h = wheelCanvas.height;
+    var cx = w / 2, cy = h / 2;
+    var radius = Math.min(w, h) / 2 - 10;
+    ctx.clearRect(0, 0, w, h); ctx.save();
+    ctx.translate(cx, cy); ctx.rotate(wheelRotation); ctx.translate(-cx, -cy);
+    ctx.beginPath(); ctx.arc(cx, cy, radius + 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#8B4513'; ctx.fill();
+    for (var ti = 0; ti < 20; ti++) {
+      var ta = (Math.PI * 2 * ti) / 20;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(ta) * (radius + 2), cy + Math.sin(ta) * (radius + 2));
+      ctx.lineTo(cx + Math.cos(ta) * (radius + 5), cy + Math.sin(ta) * (radius + 5));
+      ctx.strokeStyle = '#A0522D'; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+    var sa = -Math.PI / 2;
+    opts.forEach(function(opt, i) {
+      var sliceAngle = (weights[i] / totalWeight) * Math.PI * 2;
+      var ea = sa + sliceAngle;
+      ctx.beginPath(); ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, radius, sa, ea); ctx.closePath();
+      ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length]; ctx.fill();
+      ctx.strokeStyle = '#FFF8F0'; ctx.lineWidth = 2; ctx.stroke();
+      var midAngle = sa + sliceAngle / 2;
+      var textR = radius * 0.65;
+      var tx = cx + Math.cos(midAngle) * textR;
+      var ty = cy + Math.sin(midAngle) * textR;
+      ctx.save(); ctx.translate(tx, ty); ctx.rotate(midAngle + Math.PI / 2);
+      ctx.fillStyle = getContrastColor(WHEEL_COLORS[i % WHEEL_COLORS.length]);
+      ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      var display = opt;
+      var angleDeg = (sliceAngle / Math.PI) * 180;
+      if (angleDeg >= 60) { if (display.length > 6) display = display.slice(0, 5) + '...'; }
+      else { if (display.length > 3) display = display.slice(0, 3) + '...'; }
+      ctx.fillText(display, 0, 0); ctx.restore();
+      sa = ea;
+    });
+    ctx.beginPath(); ctx.arc(cx, cy, 18, 0, Math.PI * 2);
+    ctx.fillStyle = '#FFF8F0'; ctx.fill(); ctx.strokeStyle = '#8B4513'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#F5A623'; ctx.fill();
+    ctx.restore();
+    if (t < 1) { requestAnimationFrame(animate); }
+    else {
+      wheelSpinning = false;
+      var actualWinnerIdx = getActualWinnerIdx();
+      highlightWheelSector(actualWinnerIdx);
+      showResult(opts[actualWinnerIdx], actualWinnerIdx);
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+function getActualWinnerIdx() {
+  var opts = state.currentOptions;
+  var weights = state.currentWeights;
+  var totalWeight = weights.reduce(function(a, b) { return a + b; }, 0);
+  var pointerAngle = (-Math.PI / 2 - wheelRotation) % (Math.PI * 2);
+  if (pointerAngle < 0) pointerAngle += Math.PI * 2;
+  var sa = -Math.PI / 2;
+  for (var i = 0; i < opts.length; i++) {
+    var sliceAngle = (weights[i] / totalWeight) * Math.PI * 2;
+    var ea = sa + sliceAngle;
+    var normPointer = pointerAngle;
+    var normSa = sa; var normEa = ea;
+    while (normSa < 0) { normSa += Math.PI * 2; normEa += Math.PI * 2; }
+    while (normPointer < normSa) normPointer += Math.PI * 2;
+    if (normPointer >= normSa && normPointer < normEa) return i;
+    sa = ea;
+  }
+  return 0;
+}
+
+async function showResult(result, idx) {
+  state.currentResult = result;
+  await wait(400);
+  var youni = document.getElementById('youniStage3');
+  if (idx === 0) {
+    youni.classList.add('youni-excited');
+    createStars(youni);
+    createWarmFlash('stage3');
+    await typeText(stage3Bubble, '哇！转到了「' + result + '」！大人眼光真好！');
+  } else {
+    await typeText(stage3Bubble, '转盘停在了「' + result + '」，这是有米为大人选的！');
+  }
+  await wait(500);
+  receiptResult.textContent = result;
+  receiptDate.textContent = getToday() + ' ' + state.currentWeather;
+  var note = '';
+  if (state.preferences.spicy === 'high') note += '大人爱吃辣，有米记住了。';
+  if (state.preferences.soup === 'yes') note += '大人爱喝汤。';
+  if (state.preferences.taboo) note += '忌口：' + state.preferences.taboo + '。';
+  receiptNote.textContent = note || '有米会不断学习大人的口味~';
+  receiptOverlay.classList.add('show');
+}
+
+document.getElementById('receiptClose').addEventListener('click', function() {
+  receiptOverlay.classList.remove('show');
+  wheelPulse.classList.remove('active');
+  var youni = document.getElementById('youniStage3');
+  youni.classList.remove('youni-excited');
+  stage4Init();
+});
+
+/* ==================== 第四阶段：反馈 ==================== */
+function stage4Init() {
+  showStage('stage4');
+  createYouniSVG('youniStage4', { glasses: true, apron: true });
+  initDustParticles('dustContainer4');
+  var feedbackTitle = document.getElementById('feedbackTitle');
+  var feedbackBtns = document.getElementById('feedbackBtns');
+  var attributionBox = document.getElementById('attributionBox');
+  var goToBookBtn = document.getElementById('goToBookBtn');
+  var stage4Bubble = document.getElementById('stage4Bubble');
+  var youni = document.getElementById('youniStage4');
+  feedbackTitle.textContent = '吃完记得回来告诉有米哦~';
+  feedbackBtns.style.display = 'none';
+  attributionBox.classList.remove('show');
+  goToBookBtn.classList.add('hidden');
+  removeSadOverlay();
+  typeText(stage4Bubble, '大人吃完啦？快告诉有米味道怎么样！');
+  var existingReturn = document.getElementById('simulateReturn');
+  if (existingReturn) existingReturn.remove();
+  var returnBtn = document.createElement('button');
+  returnBtn.className = 'return-btn'; returnBtn.id = 'simulateReturn';
+  returnBtn.textContent = '模拟吃完回来';
+  returnBtn.onclick = function() {
+    returnBtn.remove();
+    feedbackTitle.textContent = '这顿吃得怎么样？';
+    feedbackBtns.style.display = 'flex';
+    typeText(stage4Bubble, '大人，这顿吃得怎么样？');
+  };
+  document.getElementById('feedbackArea').insertBefore(returnBtn, feedbackTitle.nextSibling);
+
+  document.querySelectorAll('.feedback-btn').forEach(function(btn) {
+    btn.onclick = async function() {
+      var rating = btn.dataset.rating;
+      feedbackBtns.style.display = 'none';
+      if (rating === 'good') {
+        youni.classList.add('youni-happy');
+        createStars(youni, 12);
+        createWarmFlash('stage4');
+        await typeText(stage4Bubble, '太好啦！有米好开心！大人喜欢就好！');
+        await wait(500);
+        saveHistory('good');
+        state.unlocked = Math.max(state.unlocked, 1);
+        saveData();
+        goToBookBtn.classList.remove('hidden');
+      } else if (rating === 'ok') {
+        await typeText(stage4Bubble, '嗯...一般般呀，有米下次会努力推荐更好的！');
+        await wait(500);
+        saveHistory('ok');
+        state.unlocked = Math.max(state.unlocked, 1);
+        saveData();
+        goToBookBtn.classList.remove('hidden');
+      } else {
+        youni.classList.add('youni-sad');
+        createSadOverlay('stage4');
+        var svgNS = 'http://www.w3.org/2000/svg';
+        var svgEl = youni.querySelector('svg');
+        if (svgEl) {
+          var tearG = document.createElementNS(svgNS, 'g');
+          tearG.setAttribute('class', 'youni-tears');
+          var tL = document.createElementNS(svgNS, 'ellipse');
+          tL.setAttribute('cx', '35'); tL.setAttribute('cy', '42');
+          tL.setAttribute('rx', '3'); tL.setAttribute('ry', '4');
+          tL.setAttribute('fill', '#87CEEB');
+          tL.style.animation = 'tearDrop 1.2s ease-in forwards';
+          var tR = document.createElementNS(svgNS, 'ellipse');
+          tR.setAttribute('cx', '65'); tR.setAttribute('cy', '42');
+          tR.setAttribute('rx', '3'); tR.setAttribute('ry', '4');
+          tR.setAttribute('fill', '#87CEEB');
+          tR.style.animation = 'tearDrop 1.2s ease-in 0.2s forwards';
+          tearG.appendChild(tL); tearG.appendChild(tR);
+          svgEl.appendChild(tearG);
+          setTimeout(function() { tearG.remove(); }, 2000);
+        }
+        var hanky = document.createElement('div');
+        hanky.className = 'handkerchief';
+        youni.appendChild(hanky);
+        setTimeout(function() { hanky.remove(); }, 4000);
+        await typeText(stage4Bubble, '呜...有米搞砸了，大人对不起...');
+        await wait(300);
+        attributionBox.classList.add('show');
+      }
+    };
+  });
+
+  var selectedReason = '';
+  document.querySelectorAll('.att-tag').forEach(function(tag) {
+    tag.onclick = function() {
+      document.querySelectorAll('.att-tag').forEach(function(t) { t.classList.remove('selected'); });
+      tag.classList.add('selected');
+      selectedReason = tag.dataset.reason;
+    };
+  });
+
+  document.getElementById('confirmBadBtn').onclick = async function() {
+    saveHistory('bad', selectedReason);
+    state.unlocked = Math.max(state.unlocked, 1);
+    saveData();
+    attributionBox.classList.remove('show');
+    removeSadOverlay();
+    var youni2 = document.getElementById('youniStage4');
+    youni2.classList.remove('youni-sad');
+    await typeText(stage4Bubble, '有米记住了，下次一定会更努力！');
+    await wait(400);
+    goToBookBtn.classList.remove('hidden');
+  };
+
+  goToBookBtn.onclick = function() {
+    removeSadOverlay();
+    var youni3 = document.getElementById('youniStage4');
+    youni3.classList.remove('youni-sad'); youni3.classList.remove('youni-happy'); youni3.classList.remove('youni-excited');
+    showStage('stage5');
+    initStage5();
+  };
+}
+
+function saveHistory(rating, reason) {
+  state.history.push({
+    date: getToday(), weather: state.currentWeather,
+    options: state.currentOptions, result: state.currentResult,
+    rating: rating, reason: reason || '', weights: state.currentWeights
+  });
+}
+
+/* ==================== 第五阶段：图鉴 ==================== */
+function initStage5() {
+  createYouniSVG('youniStage5', { glasses: true, apron: true });
+  initDustParticles('dustContainer5');
+  var stage5Bubble = document.getElementById('stage5Bubble');
+  var bookPage = document.getElementById('bookPage');
+  var bookNav = document.getElementById('bookNav');
+  typeText(stage5Bubble, '这是有米为大人记录的图鉴！');
+  if (state.history.length === 0) {
+    bookPage.innerHTML = '<div class="silhouette"><div class="silhouette-icon">&#128214;</div><div class="silhouette-text">还没有解锁任何记录哦~<br>快去让有米帮你决策吧！</div></div>';
+    bookNav.style.display = 'none';
+  } else {
+    bookNav.style.display = 'flex';
+    var latestPage = Math.max(0, state.history.length - 1);
+    state.currentPage = latestPage;
+    renderBookPage(latestPage);
+  }
+  document.getElementById('prevPage').onclick = function() { if (state.currentPage > 0) { state.currentPage--; renderBookPage(state.currentPage); } };
+  document.getElementById('nextPage').onclick = function() { if (state.currentPage < state.history.length) { state.currentPage++; renderBookPage(state.currentPage); } };
+}
+
+function renderBookPage(page) {
+  var bookPage = document.getElementById('bookPage');
+  var prevBtn = document.getElementById('prevPage');
+  var nextBtn = document.getElementById('nextPage');
+  prevBtn.disabled = page <= 0;
+  nextBtn.disabled = page >= state.history.length;
+  if (page >= state.history.length) {
+    bookPage.innerHTML = '<div class="silhouette"><div class="silhouette-icon">&#10067;</div><div class="silhouette-text">第 ' + (page + 1) + ' 页<br>待解锁...</div></div>';
+    return;
+  }
+  var entry = state.history[page];
+  var ratingEmoji = entry.rating === 'good' ? '&#128523; 好吃' : entry.rating === 'ok' ? '&#128528; 一般' : '&#128555; 踩雷';
+  var comment = entry.rating === 'good' ? '大人吃得很开心，有米也开心！下次还要推荐好吃的！' :
+    entry.rating === 'ok' ? '这次一般般，有米会继续努力的。' :
+    '有米记下了' + (entry.reason ? '（' + getReasonText(entry.reason) + '）' : '') + '，下次一定更仔细！';
+  bookPage.innerHTML = '<div class="book-page-title">第 ' + (page + 1) + ' 次决策记录</div>' +
+    '<div class="book-entry"><label>日期</label>' + entry.date + ' ' + entry.weather + '</div>' +
+    '<div class="book-entry"><label>选项</label>' + entry.options.join('、') + '</div>' +
+    '<div class="book-entry"><label>结果</label><strong style="color:#F5A623;">' + entry.result + '</strong></div>' +
+    '<div class="book-entry"><label>评价</label>' + ratingEmoji + '</div>' +
+    '<div class="book-comment">"' + comment + '"</div>';
+}
+
+function getReasonText(r) {
+  var map = { too_spicy: '太辣', too_bland: '太淡', bad_quality: '食材', too_slow: '等待', not_tasty: '口味', other: '其他' };
+  return map[r] || r;
+}
+
+document.getElementById('backToWheelBtn').onclick = function() {
+  var youni = document.getElementById('youniStage5');
+  youni.classList.remove('youni-sad'); youni.classList.remove('youni-happy'); youni.classList.remove('youni-excited');
+  showStage('stage3'); initStage3();
+};
+
+document.getElementById('resetBtn').onclick = function() {
+  if (confirm('要清空所有记录重新开始吗？')) {
+    localStorage.removeItem(STORAGE_KEY);
+    state.preferences = { spicy: null, soup: null, taboo: '' };
+    state.history = []; state.unlocked = 0;
+    showStage('stage1');
+    stage1Clicked = false;
+    eggContainer.style.display = 'block';
+    eggContainer.classList.remove('egg-cracked', 'egg-hatched');
+    hatchedYouni.classList.remove('show', 'shrink');
+    hatchedYouni.innerHTML = '';
+    stage1Bubble.classList.add('hidden');
+    startFirstBtn.classList.add('hidden');
+    lightBurst.innerHTML = '';
+    goldenParticles.innerHTML = '';
+    goldenGlow.classList.remove('active');
+  }
+};
+
+/* ==================== 初始化 ==================== */
+loadData();
+</script>
+</body>
+</html>

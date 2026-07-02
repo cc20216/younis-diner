@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>有米的小馆 - 一只记得你口味的电子仓鼠侍者</title>
+<style>
+/* ===== 基础重置与字体 ===== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --cream: #FFFBF5;
+  --warm-white: #FFF5E6;
+  --warm-yellow: #F9D89B;
+  --deep-yellow: #E8A838;
+  --wood-brown: #8B5A2B;
+  --dark-brown: #4A3728;
+  --light-brown: #C49A6C;
+  --accent-orange: #FF9F43;
+  --soft-pink: #FFE4D1;
+  --shadow: rgba(139, 90, 43, 0.12);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  background: var(--cream);
+  color: var(--dark-brown);
+  line-height: 1.8;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== 手绘风格装饰 ===== */
+.hand-drawn-border {
+  border: 2px solid var(--wood-brown);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+}
+
+.hand-drawn-border-soft {
+  border: 2px solid var(--light-brown);
+  border-radius: 20px 255px 20px 255px / 255px 20px 255px 20px;
+}
+
+/* ===== 动画定义 ===== */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+
+@keyframes chew {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  75% { transform: rotate(-5deg); }
+}
+
+@keyframes wheel-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes note-float {
+  0% { opacity: 0; transform: translateY(0) scale(0.5); }
+  20% { opacity: 1; transform: translateY(-10px) scale(1); }
+  100% { opacity: 0; transform: translateY(-40px) scale(0.8); }
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  30% { transform: translate(3%, -15%); }
+  50% { transform: translate(12%, 9%); }
+  70% { transform: translate(9%, 4%); }
+  90% { transform: translate(-1%, 7%); }
+}
+
+.animate-in {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+.delay-5 { animation-delay: 0.5s; }
+
+/* ===== 导航/顶部标签 ===== */
+.track-badge {
+  display: inline-block;
+  background: var(--soft-pink);
+  color: var(--wood-brown);
+  padding: 6px 20px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  border: 2px dashed var(--light-brown);
+  margin-bottom: 16px;
+}
+
+/* ===== Hero 区域 ===== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+  background: linear-gradient(180deg, var(--warm-white) 0%, var(--cream) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  animation: grain 8s steps(10) infinite;
+  pointer-events: none;
+}
+
+.hero-decoration {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hero-decoration .dot {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--warm-yellow);
+  opacity: 0.4;
+}
+
+.hero-mascot {
+  width: 140px;
+  height: 140px;
+  margin-bottom: 24px;
+  position: relative;
+  animation: float 3s ease-in-out infinite;
+}
+
+.hero-mascot .hamster-body {
+  width: 100px;
+  height: 80px;
+  background: linear-gradient(135deg, #F5D0A9 0%, #E8B881 100%);
+  border-radius: 50% 50% 45% 45%;
+  position: absolute;
+  bottom: 10px;
+  left: 20px;
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.hero-mascot .hamster-ear {
+  width: 28px;
+  height: 28px;
+  background: #F5D0A9;
+  border-radius: 50%;
+  position: absolute;
+  top: 22px;
+  border: 3px solid #D4A574;
+}
+
+.hero-mascot .hamster-ear.left { left: 30px; }
+.hero-mascot .hamster-ear.right { right: 30px; }
+
+.hero-mascot .hamster-ear-inner {
+  width: 16px;
+  height: 16px;
+  background: #FFB7B2;
+  border-radius: 50%;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+}
+
+.hero-mascot .hamster-eye {
+  width: 10px;
+  height: 10px;
+  background: var(--dark-brown);
+  border-radius: 50%;
+  position: absolute;
+  top: 50px;
+  animation: blink 4s infinite;
+}
+
+.hero-mascot .hamster-eye.left { left: 42px; }
+.hero-mascot .hamster-eye.right { right: 42px; }
+
+.hero-mascot .hamster-eye::after {
+  content: '';
+  width: 4px;
+  height: 4px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 1px;
+  left: 2px;
+}
+
+.hero-mascot .hamster-nose {
+  width: 8px;
+  height: 6px;
+  background: #FFB7B2;
+  border-radius: 50%;
+  position: absolute;
+  top: 62px;
+  left: 66px;
+}
+
+.hero-mascot .hamster-mouth {
+  width: 16px;
+  height: 8px;
+  border: 2px solid #C4846C;
+  border-top: none;
+  border-radius: 0 0 16px 16px;
+  position: absolute;
+  top: 66px;
+  left: 62px;
+}
+
+.hero-mascot .hamster-paw {
+  width: 18px;
+  height: 14px;
+  background: #F5D0A9;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 14px;
+  border: 2px solid #D4A574;
+}
+
+.hero-mascot .hamster-paw.left { left: 28px; }
+.hero-mascot .hamster-paw.right { right: 28px; }
+
+.hero h1 {
+  font-size: clamp(32px, 8vw, 56px);
+  font-weight: 800;
+  color: var(--wood-brown);
+  letter-spacing: 4px;
+  margin-bottom: 12px;
+  text-shadow: 2px 2px 0 var(--warm-yellow);
+}
+
+.hero .subtitle {
+  font-size: clamp(16px, 4vw, 22px);
+  color: var(--light-brown);
+  font-weight: 500;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.hero .hook {
+  font-size: clamp(14px, 3.5vw, 18px);
+  color: var(--dark-brown);
+  max-width: 480px;
+  line-height: 1.8;
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 16px;
+  border: 2px dashed var(--deep-yellow);
+  font-style: italic;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: float 2s ease-in-out infinite;
+}
+
+.scroll-hint span {
+  display: block;
+  width: 24px;
+  height: 36px;
+  border: 2px solid var(--light-brown);
+  border-radius: 12px;
+  position: relative;
+}
+
+.scroll-hint span::after {
+  content: '';
+  width: 4px;
+  height: 8px;
+  background: var(--light-brown);
+  border-radius: 2px;
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: float 1.5s ease-in-out infinite;
+}
+
+/* ===== 内容区块通用样式 ===== */
+.section {
+  padding: 60px 24px;
+  max-width: 720px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.section-title {
+  font-size: clamp(22px, 5vw, 28px);
+  font-weight: 700;
+  color: var(--wood-brown);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-title .icon {
+  font-size: 28px;
+  display: inline-block;
+  animation: wiggle 2s ease-in-out infinite;
+}
+
+.section-content {
+  font-size: 16px;
+  color: var(--dark-brown);
+  line-height: 2;
+}
+
+.section-content p {
+  margin-bottom: 16px;
+}
+
+.highlight-box {
+  background: var(--warm-white);
+  padding: 24px;
+  border-radius: 20px;
+  border: 2px solid var(--warm-yellow);
+  margin: 20px 0;
+  position: relative;
+}
+
+.highlight-box::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 30px;
+  width: 20px;
+  height: 20px;
+  background: var(--warm-white);
+  border-top: 2px solid var(--warm-yellow);
+  border-left: 2px solid var(--warm-yellow);
+  transform: rotate(45deg);
+}
+
+/* ===== 创意介绍流程图 ===== */
+.flow-diagram {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 24px 0;
+}
+
+.flow-step {
+  background: white;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 2px solid var(--light-brown);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wood-brown);
+  text-align: center;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.flow-arrow {
+  font-size: 20px;
+  color: var(--deep-yellow);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* ===== 痛点卡片 ===== */
+.pain-points {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.pain-card {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  border-left: 4px solid var(--accent-orange);
+  box-shadow: 0 2px 12px var(--shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pain-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+.pain-card h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--wood-brown);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pain-card p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.7;
+}
+
+/* ===== 价值阶梯 ===== */
+.value-ladder {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.value-step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.value-step:hover {
+  transform: translateX(8px);
+}
+
+.value-step .step-num {
+  width: 40px;
+  height: 40px;
+  background: var(--deep-yellow);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.value-step .step-text {
+  flex: 1;
+}
+
+.value-step .step-text h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--wood-brown);
+  margin-bottom: 4px;
+}
+
+.value-step .step-text p {
+  font-size: 13px;
+  color: #888;
+  line-height: 1.6;
+}
+
+/* ===== 核心体验预览区 ===== */
+.preview-section {
+  background: linear-gradient(135deg, var(--warm-white) 0%, #FFF0D6 100%);
+  padding: 60px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.preview-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(circle at 20% 50%, var(--warm-yellow) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, var(--soft-pink) 0%, transparent 50%);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.preview-container {
+  max-width: 720px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* 小馆场景 */
+.cafe-scene {
+  background: white;
+  border-radius: 24px;
+  padding: 32px 24px;
+  box-shadow: 0 8px 32px rgba(139, 90, 43, 0.15);
+  border: 3px solid var(--wood-brown);
+  position: relative;
+  margin-top: 24px;
+}
+
+.cafe-scene::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border-radius: 24px;
+  border: 2px dashed var(--deep-yellow);
+  pointer-events: none;
+}
+
+.scene-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.scene-header h3 {
+  font-size: 20px;
+  color: var(--wood-brown);
+  font-weight: 700;
+}
+
+.scene-header .scene-sub {
+  font-size: 13px;
+  color: var(--light-brown);
+  margin-top: 4px;
+}
+
+/* 仓鼠侍者 */
+.hamster-waiter {
+  width: 120px;
+  height: 100px;
+  margin: 0 auto 24px;
+  position: relative;
+  animation: float 3s ease-in-out infinite;
+}
+
+.hamster-waiter .h-body {
+  width: 80px;
+  height: 60px;
+  background: linear-gradient(135deg, #F5D0A9 0%, #E8B881 100%);
+  border-radius: 50% 50% 45% 45%;
+  position: absolute;
+  bottom: 8px;
+  left: 20px;
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.hamster-waiter .h-ear {
+  width: 22px;
+  height: 22px;
+  background: #F5D0A9;
+  border-radius: 50%;
+  position: absolute;
+  top: 18px;
+  border: 2px solid #D4A574;
+}
+
+.hamster-waiter .h-ear.l { left: 26px; }
+.hamster-waiter .h-ear.r { right: 26px; }
+
+.hamster-waiter .h-ear-in {
+  width: 12px;
+  height: 12px;
+  background: #FFB7B2;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+}
+
+.hamster-waiter .h-eye {
+  width: 8px;
+  height: 8px;
+  background: var(--dark-brown);
+  border-radius: 50%;
+  position: absolute;
+  top: 42px;
+  animation: blink 3.5s infinite;
+}
+
+.hamster-waiter .h-eye.l { left: 40px; }
+.hamster-waiter .h-eye.r { right: 40px; }
+
+.hamster-waiter .h-eye::after {
+  content: '';
+  width: 3px;
+  height: 3px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 1px;
+  left: 1px;
+}
+
+.hamster-waiter .h-nose {
+  width: 6px;
+  height: 5px;
+  background: #FFB7B2;
+  border-radius: 50%;
+  position: absolute;
+  top: 52px;
+  left: 57px;
+}
+
+.hamster-waiter .h-mouth {
+  width: 12px;
+  height: 6px;
+  border: 2px solid #C4846C;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  position: absolute;
+  top: 55px;
+  left: 54px;
+}
+
+.hamster-waiter .h-paw {
+  width: 14px;
+  height: 10px;
+  background: #F5D0A9;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 12px;
+  border: 2px solid #D4A574;
+}
+
+.hamster-waiter .h-paw.l { left: 26px; }
+.hamster-waiter .h-paw.r { right: 26px; }
+
+.hamster-waiter .h-cheek {
+  width: 20px;
+  height: 16px;
+  background: #FFD5D5;
+  border-radius: 50%;
+  position: absolute;
+  top: 48px;
+  opacity: 0.6;
+}
+
+.hamster-waiter .h-cheek.l { left: 28px; }
+.hamster-waiter .h-cheek.r { right: 28px; }
+
+/* 侍者围裙 */
+.hamster-waiter .apron {
+  width: 44px;
+  height: 30px;
+  background: #E8D5C4;
+  border-radius: 0 0 22px 22px;
+  position: absolute;
+  bottom: 8px;
+  left: 38px;
+  border: 2px solid #C4A88C;
+}
+
+.hamster-waiter .apron::after {
+  content: '米';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: var(--wood-brown);
+  font-weight: 700;
+}
+
+/* 音乐音符 */
+.music-notes {
+  position: absolute;
+  top: 0;
+  right: 10px;
+}
+
+.note {
+  position: absolute;
+  font-size: 16px;
+  color: var(--deep-yellow);
+  opacity: 0;
+  animation: note-float 2s ease-out infinite;
+}
+
+.note:nth-child(1) { right: 0; animation-delay: 0s; }
+.note:nth-child(2) { right: 20px; animation-delay: 0.6s; }
+.note:nth-child(3) { right: -10px; animation-delay: 1.2s; }
+
+/* 转盘 */
+.wheel-container {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 24px;
+  position: relative;
+}
+
+.wheel {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--warm-yellow) 0deg 60deg,
+    var(--soft-pink) 60deg 120deg,
+    #C8E6C9 120deg 180deg,
+    var(--warm-yellow) 180deg 240deg,
+    var(--soft-pink) 240deg 300deg,
+    #C8E6C9 300deg 360deg
+  );
+  border: 4px solid var(--wood-brown);
+  position: relative;
+  animation: wheel-spin 8s linear infinite;
+  box-shadow: 0 4px 16px var(--shadow);
+}
+
+.wheel-center {
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 3px solid var(--wood-brown);
+  z-index: 2;
+}
+
+.wheel-center::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  background: var(--deep-yellow);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.wheel-pointer {
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 20px solid var(--accent-orange);
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.wheel-labels {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.wl {
+  position: absolute;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dark-brown);
+  white-space: nowrap;
+}
+
+.wl-1 { top: 35px; left: 50%; transform: translateX(-50%) rotate(-30deg); }
+.wl-2 { top: 85px; right: 20px; transform: rotate(30deg); }
+.wl-3 { bottom: 35px; left: 50%; transform: translateX(-50%) rotate(90deg); }
+.wl-4 { top: 85px; left: 20px; transform: rotate(-30deg); }
+
+/* 结果便签 */
+.result-sticky {
+  width: 160px;
+  height: 80px;
+  background: #FFF9C4;
+  margin: 0 auto;
+  padding: 12px;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  position: relative;
+  transform: rotate(-3deg);
+  text-align: center;
+}
+
+.result-sticky::before {
+  content: '';
+  width: 60px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.6);
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.result-sticky h4 {
+  font-size: 14px;
+  color: var(--wood-brown);
+  margin-bottom: 4px;
+}
+
+.result-sticky p {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-orange);
+}
+
+/* 底部行动区 */
+.cta-section {
+  text-align: center;
+  padding: 48px 24px;
+  background: var(--wood-brown);
+  color: var(--warm-white);
+}
+
+.cta-section h2 {
+  font-size: 24px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.cta-section p {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+.cta-badge {
+  display: inline-block;
+  padding: 12px 32px;
+  background: var(--deep-yellow);
+  color: white;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 2px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ===== 装饰分隔线 ===== */
+.divider {
+  text-align: center;
+  padding: 24px;
+  color: var(--light-brown);
+  font-size: 20px;
+  letter-spacing: 8px;
+}
+
+/* ===== 响应式优化 ===== */
+@media (max-width: 480px) {
+  .section {
+    padding: 40px 20px;
+  }
+  
+  .flow-diagram {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .flow-arrow {
+    transform: rotate(90deg);
+  }
+  
+  .wheel-container {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .wheel {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .value-step:hover {
+    transform: translateX(4px);
+  }
+  
+  .cafe-scene {
+    padding: 24px 16px;
+  }
+}
+
+/* ===== 滚动触发 ===== */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== 工具提示 ===== */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+  border-bottom: 2px dashed var(--deep-yellow);
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 200px;
+  background: var(--wood-brown);
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+  padding: 8px 12px;
+  position: absolute;
+  z-index: 10;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -100px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO 区域 ===== -->
+<section class="hero">
+  <div class="hero-decoration">
+    <div class="dot" style="width:80px;height:80px;top:10%;left:5%;"></div>
+    <div class="dot" style="width:40px;height:40px;top:20%;right:10%;"></div>
+    <div class="dot" style="width:60px;height:60px;bottom:15%;left:15%;"></div>
+    <div class="dot" style="width:30px;height:30px;bottom:25%;right:5%;"></div>
+  </div>
+
+  <div class="track-badge animate-in">生活娱乐赛道</div>
+
+  <div class="hero-mascot animate-in delay-1">
+    <div class="hamster-ear left"><div class="hamster-ear-inner"></div></div>
+    <div class="hamster-ear right"><div class="hamster-ear-inner"></div></div>
+    <div class="hamster-body"></div>
+    <div class="hamster-eye left"></div>
+    <div class="hamster-eye right"></div>
+    <div class="hamster-nose"></div>
+    <div class="hamster-mouth"></div>
+    <div class="hamster-paw left"></div>
+    <div class="hamster-paw right"></div>
+  </div>
+
+  <h1 class="animate-in delay-2">有米的小馆</h1>
+  <p class="subtitle animate-in delay-3">一只记得你口味的电子仓鼠侍者</p>
+  <p class="hook animate-in delay-4">"它不是要替代你的选择，它只是在告诉你：有人在替你想"</p>
+
+  <div class="scroll-hint animate-in delay-5">
+    <span></span>
+  </div>
+</section>
+
+<!-- ===== 创意介绍 ===== -->
+<section class="section scroll-reveal">
+  <h2 class="section-title"><span class="icon">✨</span> 创意介绍</h2>
+  <div class="section-content">
+    <p>有米不是冷冰冰的随机数生成器，而是一只会记住你、会学习、甚至会偶尔犯迷糊的电子仓鼠侍者。当你走进「有米的小馆」，这只戴着迷你围裙的小家伙会扑闪着眼睛问你："今天想吃点什么？"</p>
+    
+    <div class="flow-diagram">
+      <div class="flow-step">输入选项</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">有米分析</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">画不等分扇区</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">转盘转动</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">结果便签</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">反馈学习</div>
+    </div>
+
+    <div class="highlight-box">
+      <p>它的独特之处在于"记忆"。你上周说想吃火锅却选了轻食，有米会记得；你每次_feedback_说"太辣了"，它会悄悄调整推荐权重。转盘上的扇区从不是均等的——有米会根据你的心情、天气、甚至今天星期几，画出不同大小的扇区。当它转出你不喜欢的结果时，它会耷拉着耳朵说"对不起，我记错了"，然后认真修正。</p>
+    </div>
+    
+    <p>这是一款<span class="tooltip">生活决策辅助 × 模拟养成 × 治愈陪伴<span class="tooltip-text">三种体验融合，不只是工具，更是伙伴</span></span>的产品。有米会成长，会犯错，会道歉，会在你深夜加班时弹出一句"要不要试试那家你上周说好吃的拉面？"</p>
+  </div>
+</section>
+
+<div class="divider">* * *</div>
+
+<!-- ===== 目标用户及痛点 ===== -->
+<section class="section scroll-reveal">
+  <h2 class="section-title"><span class="icon">🎯</span> 目标用户及痛点</h2>
+  <div class="section-content">
+    <p>我们的目标用户是每天被"今天吃什么"困扰的都市年轻人——尤其是独居打工人、选择困难症患者，以及那些渴望在冰冷城市里找到一点温暖的灵魂。</p>
+    
+    <div class="pain-points">
+      <div class="pain-card">
+        <h4>😫 选择焦虑</h4>
+        <p>每天平均要花23分钟纠结三餐，大脑电量在决策中耗尽，真正的创造力被琐碎消耗。</p>
+      </div>
+      <div class="pain-card">
+        <h4>😔 工具冰冷</h4>
+        <p>市面上的随机转盘App毫无记忆，今天给你推轻食，明天又推火锅，从不记得你上周刚说过在戒辣。</p>
+      </div>
+      <div class="pain-card">
+        <h4>😢 陪伴缺失</h4>
+        <p>独居青年打开外卖App，面对成百上千家店，却找不到一个"人"来商量。算法推荐的是销量，不是"你"。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider">* * *</div>
+
+<!-- ===== 价值与意义 ===== -->
+<section class="section scroll-reveal">
+  <h2 class="section-title"><span class="icon">💡</span> 价值与意义</h2>
+  <div class="section-content">
+    <p>「有米的小馆」试图回答一个问题：当AI越来越聪明，它能不能也越来越"暖"？</p>
+    
+    <div class="value-ladder">
+      <div class="value-step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <h4>这个转盘挺有用</h4>
+          <p>一开始，用户只是觉得"不用再纠结了"，有米帮他们省下了每天20分钟的决策时间。</p>
+        </div>
+      </div>
+      <div class="value-step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <h4>它好像懂我</h4>
+          <p>慢慢地，用户发现下雨天有米会偏向推荐热汤面，加班夜它会避开油腻。它真的在"学"。</p>
+        </div>
+      </div>
+      <div class="value-step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <h4>它在等我回家</h4>
+          <p>最终，用户打开App不只是为了决定吃什么，而是想看看今天有米又学了什么新词，有没有把耳朵耷拉下来道歉。情感连接发生了。</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="highlight-box" style="margin-top: 24px;">
+      <p>我们相信，AI的真正价值不在于替代人类做选择，而在于让每一次选择都感觉到"被在意"。有米的"记忆力"是一种新的情感设计范式——它让虚拟角色拥有了真实的"在意"能力。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 核心体验预览区 ===== -->
+<section class="preview-section scroll-reveal">
+  <div class="preview-container">
+    <h2 class="section-title" style="color: var(--wood-brown);"><span class="icon">🎪</span> 核心体验预览</h2>
+    <p class="section-content" style="text-align: center; margin-bottom: 8px;">欢迎来到有米的小馆——</p>
+    
+    <div class="cafe-scene">
+      <div class="scene-header">
+        <h3>有米的小馆</h3>
+        <p class="scene-sub">今日营业中 · 有米正在努力学习你的口味</p>
+      </div>
+      
+      <!-- 仓鼠侍者 -->
+      <div class="hamster-waiter">
+        <div class="h-ear l"><div class="h-ear-in"></div></div>
+        <div class="h-ear r"><div class="h-ear-in"></div></div>
+        <div class="h-body"></div>
+        <div class="h-eye l"></div>
+        <div class="h-eye r"></div>
+        <div class="h-cheek l"></div>
+        <div class="h-cheek r"></div>
+        <div class="h-nose"></div>
+        <div class="h-mouth"></div>
+        <div class="h-paw l"></div>
+        <div class="h-paw r"></div>
+        <div class="apron"></div>
+        <div class="music-notes">
+          <span class="note">♪</span>
+          <span class="note">♫</span>
+          <span class="note">♪</span>
+        </div>
+      </div>
+      
+      <!-- 转盘 -->
+      <div class="wheel-container">
+        <div class="wheel-pointer"></div>
+        <div class="wheel">
+          <div class="wheel-center"></div>
+        </div>
+        <div class="wheel-labels">
+          <span class="wl wl-1">拉面</span>
+          <span class="wl wl-2">沙拉</span>
+          <span class="wl wl-3">火锅</span>
+          <span class="wl wl-4">寿司</span>
+        </div>
+      </div>
+      
+      <!-- 结果便签 -->
+      <div class="result-sticky">
+        <h4>有米推荐</h4>
+        <p>豚骨拉面</p>
+      </div>
+      
+      <p style="text-align: center; margin-top: 20px; font-size: 13px; color: var(--light-brown);">
+        "上次你说这家汤底很浓，今天降温了，要试试吗？" —— 有米
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 底部 ===== -->
+<section class="cta-section">
+  <h2>有米的小馆</h2>
+  <p>一只记得你口味的电子仓鼠侍者<br>生活娱乐赛道 | TRAE AI创造力大赛</p>
+  <div class="cta-badge">期待与您相遇</div>
+</section>
+
+<script>
+// 滚动触发动画
+const observerOptions = {
+  root: null,
+  rootMargin: '0px',
+  threshold: 0.15
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('revealed');
+      observer.unobserve(entry.target);
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.scroll-reveal').forEach(el => {
+  observer.observe(el);
+});
+
+// 点击仓鼠互动
+document.querySelectorAll('.hamster-waiter, .hero-mascot').forEach(hamster => {
+  hamster.addEventListener('click', function() {
+    this.style.animation = 'none';
+    this.offsetHeight; // 触发重排
+    this.style.animation = 'float 3s ease-in-out infinite';
+    
+    // 创建爱心
+    for (let i = 0; i < 3; i++) {
+      setTimeout(() => {
+        const heart = document.createElement('div');
+        heart.textContent = '❤';
+        heart.style.cssText = `
+          position: absolute;
+          top: -20px;
+          left: ${50 + (Math.random() - 0.5) * 40}%;
+          font-size: 16px;
+          color: #FF6B6B;
+          pointer-events: none;
+          animation: note-float 1.5s ease-out forwards;
+          z-index: 100;
+        `;
+        this.appendChild(heart);
+        setTimeout(() => heart.remove(), 1500);
+      }, i * 200);
+    }
+  });
+});
+
+// 转盘点击暂停/恢复
+document.querySelector('.wheel').addEventListener('click', function() {
+  const currentAnimation = this.style.animationPlayState;
+  if (currentAnimation === 'paused') {
+    this.style.animationPlayState = 'running';
+  } else {
+    this.style.animationPlayState = 'paused';
+    setTimeout(() => {
+      this.style.animationPlayState = 'running';
+    }, 1000);
+  }
+});
+
+// 鼠标视差效果（仅桌面）
+if (window.innerWidth > 768) {
+  document.addEventListener('mousemove', (e) => {
+    const dots = document.querySelectorAll('.hero-decoration .dot');
+    const x = e.clientX / window.innerWidth;
+    const y = e.clientY / window.innerHeight;
+    dots.forEach((dot, i) => {
+      const speed = (i + 1) * 10;
+      dot.style.transform = `translate(${(x - 0.5) * speed}px, ${(y - 0.5) * speed}px)`;
+    });
+  });
+}
+
+// 结果便签随机切换（模拟有米思考）
+const dishes = ['豚骨拉面', '牛油果沙拉', '麻辣火锅', '三文鱼寿司', '牛肉汉堡', '广式早茶', '韩式拌饭', '意式披萨'];
+const stickyText = document.querySelector('.result-sticky p');
+let dishIndex = 0;
+
+setInterval(() => {
+  dishIndex = (dishIndex + 1) % dishes.length;
+  stickyText.style.opacity = '0';
+  setTimeout(() => {
+    stickyText.textContent = dishes[dishIndex];
+    stickyText.style.opacity = '1';
+  }, 200);
+}, 4000);
+</script>
+
+</body>
+</html>
