@@ -11,3 +11,6 @@ __pycache__/
 *.pyc
 .next/
 coverage/
+Thumbs.db
+*.docx
+帖子3内容.txt

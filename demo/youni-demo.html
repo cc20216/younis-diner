@@ -68,8 +68,12 @@ html, body {
 /* ==================== 通用动画 ==================== */
 @keyframes shake {
   0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-3deg); }
-  75% { transform: rotate(3deg); }
+  15% { transform: rotate(-3deg); }
+  30% { transform: rotate(2deg); }
+  45% { transform: rotate(-2deg); }
+  60% { transform: rotate(1deg); }
+  75% { transform: rotate(-0.5deg); }
+  90% { transform: rotate(0.3deg); }
 }
 @keyframes float {
   0%, 100% { transform: translateY(0); }
@@ -88,14 +92,7 @@ html, body {
   from { transform: translateY(30px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
-@keyframes blink {
-  0%, 90%, 100% { transform: scaleY(1); }
-  95% { transform: scaleY(0.1); }
-}
-@keyframes earWiggle {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(-8deg); }
-}
+/* (blink/earWiggle moved to image-based approach) */
 @keyframes bounce {
   0%, 100% { transform: translateY(0) scale(1); }
   15% { transform: translateY(-28px) scale(1.05, 0.95); }
@@ -147,6 +144,12 @@ html, body {
   60% { transform: scale(0.95) rotate(2deg); }
   100% { transform: scale(1); }
 }
+@keyframes wheelPopIn {
+  0% { transform: scale(0) rotate(-90deg); opacity: 0; }
+  55% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+  75% { transform: scale(0.95) rotate(-2deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
 @keyframes hatchTop {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(-35deg) translateY(-10px); }
@@ -156,23 +159,16 @@ html, body {
   100% { transform: rotate(25deg) translateY(5px); }
 }
 @keyframes hamsterRise {
-  0% { transform: translate(-50%, 30px); opacity: 0; }
-  60% { transform: translate(-50%, -5px); opacity: 1; }
-  100% { transform: translate(-50%, 0px); opacity: 1; }
+  0% { transform: translate(0, 30px); opacity: 0; }
+  60% { transform: translate(0, -5px); opacity: 1; }
+  100% { transform: translate(0, 0px); opacity: 1; }
 }
 @keyframes hamsterShrink {
-  0% { transform: translate(-50%, 0px) scale(1.8); opacity: 0.8; }
-  60% { transform: translate(-50%, 0px) scale(1.05); opacity: 1; }
-  100% { transform: translate(-50%, 0px) scale(1); opacity: 1; }
+  0% { transform: translate(0, 0px) scale(1.8); opacity: 0.8; }
+  60% { transform: translate(0, 0px) scale(1.05); opacity: 1; }
+  100% { transform: translate(0, 0px) scale(1); opacity: 1; }
 }
-@keyframes glassesOn {
-  0% { transform: translateY(-30px) scale(0.5); opacity: 0; }
-  100% { transform: translateY(0) scale(1); opacity: 1; }
-}
-@keyframes apronOn {
-  0% { transform: translateY(20px) scale(0.8); opacity: 0; }
-  100% { transform: translateY(0) scale(1); opacity: 1; }
-}
+/* (glassesOn/apronOn replaced by image sequence 19->20->21) */
 @keyframes typeCursor {
   0%, 100% { border-color: transparent; }
   50% { border-color: #2C1810; }
@@ -197,16 +193,7 @@ html, body {
   20% { opacity: 0.3; }
   100% { opacity: 0; }
 }
-@keyframes thinkTilt {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(6deg); }
-}
-@keyframes dustFloat {
-  0% { transform: translate(0, 0) scale(1); opacity: 0; }
-  10% { opacity: 0.6; }
-  90% { opacity: 0.6; }
-  100% { transform: translate(var(--dx), var(--dy)) scale(0.5); opacity: 0; }
-}
+/* (thinkTilt replaced by image-based thinking pose) */
 @keyframes sadOverlay {
   0% { opacity: 0; }
   100% { opacity: 1; }
@@ -247,21 +234,6 @@ html, body {
 }
 
 /* ==================== 浮尘粒子容器 ==================== */
-.dust-container {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 2;
-  overflow: hidden;
-}
-.dust-particle {
-  position: absolute;
-  border-radius: 50%;
-  animation: dustFloat var(--dur) linear forwards;
-  opacity: 0;
-}
-
 /* ==================== 伤心背景覆盖层 ==================== */
 .sad-bg-overlay {
   position: absolute;
@@ -319,82 +291,33 @@ html, body {
   margin-left: 2px;
 }
 
-/* ==================== SVG 有米角色容器 ==================== */
+/* ==================== 有米角色容器 ==================== */
 .youni-container {
   position: relative;
-  width: 120px; height: 140px;
+  width: 140px; height: 165px;
   z-index: 10;
 }
-.youni-container svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
+.youni-container img {
+  width: 140px;
+  height: auto;
 }
 
-/* SVG 角色情绪状态 */
-.youni-happy .youni-mouth-path {
-  d: path("M 42 42 Q 50 50 58 42");
-}
-.youni-happy .youni-eye-l,
-.youni-happy .youni-eye-r {
-  ry: 2;
-}
-.youni-happy .youni-arm-l {
-  transform: rotate(-30deg);
-  transform-origin: 30px 85px;
-  transition: transform 0.3s;
-}
-.youni-happy .youni-arm-r {
-  transform: rotate(30deg);
-  transform-origin: 70px 85px;
-  transition: transform 0.3s;
-}
-.youni-happy svg {
-  animation: wobble 0.4s ease-in-out 3;
+
+
+
+
+
+
+
+
+
+
+/* 转盘入场 */
+.wheel-pop-in {
+  animation: wheelPopIn 0.5s ease-out forwards;
 }
 
-.youni-sad .youni-eye-l,
-.youni-sad .youni-eye-r {
-  ry: 1.5;
-  cy: 33;
-  opacity: 0.6;
-}
-.youni-sad .youni-mouth-path {
-  d: path("M 42 45 Q 50 39 58 45");
-}
-.youni-sad .youni-ear-l {
-  transform: rotate(15deg);
-  transform-origin: 25px 28px;
-  transition: transform 0.3s;
-}
-.youni-sad .youni-ear-r {
-  transform: rotate(-15deg);
-  transform-origin: 75px 28px;
-  transition: transform 0.3s;
-}
-.youni-sad .youni-arm-l {
-  transform: rotate(10deg);
-  transform-origin: 30px 85px;
-  transition: transform 0.3s;
-}
-.youni-sad .youni-arm-r {
-  transform: rotate(-10deg);
-  transform-origin: 70px 85px;
-  transition: transform 0.3s;
-}
-
-.youni-excited svg {
-  animation: bounce 0.5s ease-in-out infinite;
-}
-
-.youni-thinking svg {
-  animation: thinkTilt 1.2s ease-in-out infinite;
-}
-.youni-thinking .youni-eye-l,
-.youni-thinking .youni-eye-r {
-  cx: 40;
-  r: 4;
-}
+/* (idle animations replaced by image-based blink) */
 
 /* 星星特效 */
 .star {
@@ -406,34 +329,17 @@ html, body {
   z-index: 100;
 }
 
-/* 眼泪 */
-.tear {
-  position: absolute;
-  top: 40px;
-  width: 6px; height: 10px;
-  background: #87CEEB;
-  border-radius: 50%;
-  animation: tearDrop 1.2s ease-in forwards;
-  z-index: 20;
-}
-.tear.left { left: 20px; }
-.tear.right { right: 20px; }
 
-/* 手帕 */
-.handkerchief {
-  position: absolute;
-  top: 60px; right: -20px;
-  width: 20px; height: 20px;
-  background: #FFB6C1;
-  border-radius: 0 50% 50% 50%;
-  animation: float 2s ease-in-out infinite;
-  z-index: 20;
-}
 
 /* ==================== 第一阶段：孵化 ==================== */
 #stage1 {
   background: #0d0d0d;
   cursor: pointer;
+}
+#stage1.hatched-bg {
+  background: #1a2e1a url('背景.png') center/cover no-repeat;
+  cursor: default;
+  transition: background 0.8s ease;
 }
 .egg-container {
   position: relative;
@@ -445,7 +351,8 @@ html, body {
   background: #FFF8F0;
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
   box-shadow: inset -8px -8px 20px rgba(0,0,0,0.1), 0 8px 20px rgba(255,255,255,0.1);
-  animation: shake 2s ease-in-out infinite;
+  animation: shake 3s ease-in-out infinite;
+  transform-origin: 50% 95%;
   z-index: 2;
 }
 .egg-crack {
@@ -542,8 +449,8 @@ html, body {
 
 #hatchedYouni {
   position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, 30px);
+  top: 330px; left: 30px;
+  transform: translate(0, 30px);
   opacity: 0;
   z-index: 5;
 }
@@ -581,14 +488,14 @@ html, body {
 .blackboard {
   position: absolute;
   top: 20px; right: 16px;
-  width: 140px; height: 180px;
+  width: 220px; min-height: 200px; height: auto;
   background: #1a1a1a;
   border: 4px solid #8B5A2B;
   border-radius: 4px;
   padding: 10px;
   color: #F5A623;
-  font-size: 11px;
-  line-height: 1.8;
+  font-size: 10px;
+  line-height: 1.7;
   box-shadow: 0 4px 12px rgba(0,0,0,0.4);
   z-index: 20;
 }
@@ -620,7 +527,7 @@ html, body {
 
 .question-area {
   position: absolute;
-  top: 36%; left: 50%;
+  top: 340px; left: 50%;
   transform: translate(-50%, -50%);
   width: 300px;
   text-align: center;
@@ -634,17 +541,18 @@ html, body {
 }
 .choice-buttons {
   display: flex;
-  gap: 20px;
+  gap: 10px;
   justify-content: center;
+  flex-wrap: wrap;
   margin-bottom: 20px;
 }
 .choice-btn {
-  padding: 12px 32px;
+  padding: 10px 18px;
   border: 2px solid #F5A623;
   background: rgba(245,166,35,0.15);
   color: #F5A623;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s;
@@ -682,9 +590,62 @@ html, body {
 }
 .taboo-input::placeholder { color: #8B7355; }
 
+/* 黑板编辑态 */
+.edit-pref-btn {
+  cursor: pointer;
+  font-size: 11px;
+  margin-left: 4px;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  vertical-align: middle;
+}
+.edit-pref-btn:hover { opacity: 1; }
+.pref-edit-section { padding: 4px 0; }
+.pref-edit-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 4px;
+  margin-bottom: 8px;
+  white-space: nowrap;
+}
+.pref-label {
+  color: #F5A623;
+  font-size: 11px;
+  font-weight: bold;
+  min-width: 28px;
+}
+.pref-toggle {
+  padding: 3px 8px;
+  font-size: 10px;
+  border: 1px solid rgba(245,166,35,0.5);
+  background: rgba(245,166,35,0.1);
+  color: #FFF8F0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pref-toggle:hover { background: rgba(245,166,35,0.3); }
+.pref-toggle.pref-on {
+  background: #F5A623;
+  color: #2C1810;
+  border-color: #F5A623;
+  font-weight: bold;
+}
+.pref-edit-section .taboo-input {
+  width: 90px;
+  padding: 4px 8px;
+  font-size: 11px;
+}
+.pref-edit-section .choice-btn {
+  padding: 5px 16px;
+  font-size: 11px;
+  border-width: 1px;
+}
+
 .prop-chili {
   position: absolute;
-  top: 18%; left: 20%;
+  top: 250px; left: 65px;
   font-size: 40px;
   animation: float 3s ease-in-out infinite;
   z-index: 8;
@@ -705,7 +666,7 @@ html, body {
 }
 .wheel-area {
   position: relative;
-  width: 320px; height: 280px;
+  width: 280px; height: 280px;
   margin: 0 auto;
 }
 #wheelCanvas {
@@ -725,7 +686,7 @@ html, body {
 .wheel-pulse {
   position: absolute;
   top: 50%; left: 50%;
-  width: 290px; height: 290px;
+  width: 280px; height: 280px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   pointer-events: none;
@@ -734,6 +695,23 @@ html, body {
   opacity: 0;
 }
 .wheel-pulse.active { opacity: 1; }
+
+.wheel-tooltip {
+  position: absolute;
+  background: rgba(44, 24, 16, 0.95);
+  color: #FFF8F0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  pointer-events: none;
+  z-index: 30;
+  opacity: 0;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+  border: 1px solid #F5A623;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.wheel-tooltip.show { opacity: 1; }
 
 .input-area {
   position: absolute;
@@ -756,6 +734,30 @@ html, body {
   margin-bottom: 12px;
 }
 .options-input::placeholder { color: #8B7355; }
+.wheel-action-btn {
+  padding: 10px 24px;
+  border: 2px solid #F5A623;
+  background: transparent;
+  color: #F5A623;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 120px;
+  height: 44px;
+  box-sizing: border-box;
+}
+.wheel-action-btn:hover {
+  background: #F5A623;
+  color: #2C1810;
+  box-shadow: 0 4px 12px rgba(245,166,35,0.3);
+}
+.wheel-action-btn:disabled {
+  border-color: #8B7355;
+  color: #8B7355;
+  cursor: not-allowed;
+}
 .spin-btn {
   padding: 12px 32px;
   background: #F5A623;
@@ -1045,6 +1047,76 @@ html, body {
   gap: 24px;
   z-index: 50;
 }
+/* 转盘弹性入场动画 */
+#wheelCanvas {
+  transform-origin: center center;
+}
+.wheel-bounce-in {
+  animation: wheelBounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes wheelBounceIn {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  80% { transform: scale(0.96); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+
+
+/* 跳过反馈文字链接样式 */
+.skip-feedback-link {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 16px;
+  background: transparent;
+  border: none;
+  color: #8B7355;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+.skip-feedback-link:hover {
+  color: #F5A623;
+}
+
+/* 图鉴空状态 */
+.collection-empty {
+  text-align: center;
+  padding: 30px 20px;
+}
+.empty-sleep-hamster {
+  width: 100px;
+  height: auto;
+  margin: 0 auto 12px;
+  animation: sleepBreathe 3s ease-in-out infinite;
+}
+.empty-sleep-hamster img {
+  width: 100px;
+  height: auto;
+}
+@keyframes sleepBreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+.empty-sleep-text {
+  color: #8B7355;
+  font-size: 13px;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+.z-z-z {
+  font-size: 14px;
+  color: #B8956E;
+  margin-left: 8px;
+  animation: zFloat 2s ease-in-out infinite;
+}
+@keyframes zFloat {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(-6px); opacity: 1; }
+}
+
 .menu-btn {
   padding: 8px 20px;
   border: 2px solid #F5A623;
@@ -1088,10 +1160,9 @@ html, body {
 
 .youni-stage3 {
   position: absolute;
-  bottom: 10px;
+  bottom: 20px;
   left: 8px;
-  transform: scale(0.7);
-  transform-origin: bottom left;
+  transform: none;
   z-index: 25;
 }
 
@@ -1125,10 +1196,143 @@ html, body {
   cursor: pointer;
   animation: popIn 0.5s;
 }
+
+.sound-toggle {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(139, 69, 19, 0.8);
+  color: #FFF8F0;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9999;
+  border: 2px solid #F5A623;
+  transition: all 0.3s ease;
+}
+.sound-toggle:hover {
+  background: rgba(139, 69, 19, 1);
+  transform: scale(1.1);
+}
+.sound-toggle.muted {
+  background: rgba(50, 30, 20, 0.8);
+  border-color: #666;
+}
+
+.sound-panel {
+  position: absolute;
+  top: 58px;
+  left: 16px;
+  width: 200px;
+  background: rgba(44, 24, 16, 0.95);
+  border: 2px solid #8B5A2B;
+  border-radius: 12px;
+  padding: 14px;
+  z-index: 9998;
+  display: none;
+  color: #FFF8F0;
+  font-size: 13px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.sound-panel.show {
+  display: block;
+  animation: panelFadeIn 0.2s ease-out;
+}
+@keyframes panelFadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.sound-panel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.sound-panel-row:last-child { margin-bottom: 0; }
+.sound-panel-label {
+  font-weight: bold;
+  color: #F5A623;
+}
+.sound-panel-btns {
+  display: flex;
+  gap: 6px;
+}
+.sound-panel-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #8B5A2B;
+  background: rgba(139, 69, 19, 0.5);
+  color: #FFF8F0;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+.sound-panel-btn:hover { background: rgba(139, 69, 19, 0.8); }
+.sound-panel-btn.active {
+  background: #F5A623;
+  color: #2C1810;
+  border-color: #F5A623;
+}
+.sound-slider-wrap {
+  flex: 1;
+  margin-left: 10px;
+}
+.sound-slider {
+  width: 100%;
+  height: 4px;
+  -webkit-appearance: none;
+  background: #8B5A2B;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+.sound-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #F5A623;
+  cursor: pointer;
+  border: 2px solid #FFF8F0;
+}
 </style>
 </head>
 <body>
 <div id="app-wrapper">
+  <div id="soundToggle" class="sound-toggle" title="音效设置">🔊</div>
+  <div id="soundPanel" class="sound-panel">
+    <div class="sound-panel-row">
+      <span class="sound-panel-label">背景音乐</span>
+      <div class="sound-panel-btns">
+        <button class="sound-panel-btn" id="bgmOnBtn">开</button>
+        <button class="sound-panel-btn" id="bgmOffBtn">关</button>
+      </div>
+    </div>
+    <div class="sound-panel-row">
+      <span class="sound-panel-label" style="font-size:12px;">BGM音量</span>
+      <div class="sound-slider-wrap">
+        <input type="range" class="sound-slider" id="bgmSlider" min="0" max="100" value="25">
+      </div>
+    </div>
+    <div class="sound-panel-row">
+      <span class="sound-panel-label">音效</span>
+      <div class="sound-panel-btns">
+        <button class="sound-panel-btn" id="sfxOnBtn">开</button>
+        <button class="sound-panel-btn" id="sfxOffBtn">关</button>
+      </div>
+    </div>
+    <div class="sound-panel-row">
+      <span class="sound-panel-label" style="font-size:12px;">音效音量</span>
+      <div class="sound-slider-wrap">
+        <input type="range" class="sound-slider" id="sfxSlider" min="0" max="100" value="60">
+      </div>
+    </div>
+  </div>
 
 <!-- ==================== 第一阶段：孵化 ==================== -->
 <div id="stage1" class="stage active">
@@ -1140,7 +1344,7 @@ html, body {
     <div class="light-burst-container" id="lightBurst"></div>
   </div>
   <div id="hatchedYouni" class="youni-container"></div>
-  <div id="stage1Bubble" class="bubble hidden" style="left:130px;top:500px;max-width:200px;"></div>
+  <div id="stage1Bubble" class="bubble hidden" style="left:160px;top:290px;max-width:200px;"></div>
   <button id="startFirstBtn" class="start-btn hidden" style="position:absolute;bottom:100px;">开始第一次决策</button>
 </div>
 
@@ -1149,10 +1353,9 @@ html, body {
   <div class="tavern-scene">
     <div class="tavern-bg-texture"></div>
     <div class="warm-vignette"></div>
-    <div class="dust-container" id="dustContainer2"></div>
     <div class="lamp"></div>
     <div class="blackboard">
-      <div class="blackboard-title">有米的笔记</div>
+      <div class="blackboard-title">有米的笔记<span id="editPrefBtn" class="edit-pref-btn hidden" title="修改偏好">✏️</span></div>
       <div id="blackboardContent">辣度：待了解<br>汤类：待了解<br>忌口：无</div>
     </div>
     <div class="bar-counter"></div>
@@ -1160,7 +1363,7 @@ html, body {
     <div class="prop-bowl" id="propBowl" style="display:none;">🍜</div>
   </div>
   <div class="youni-container youni-stage2" id="youniStage2"></div>
-  <div id="stage2Bubble" class="bubble" style="left:130px;top:500px;max-width:200px;"></div>
+  <div id="stage2Bubble" class="bubble" style="left:150px;top:480px;max-width:200px;"></div>
   <div class="question-area" id="questionArea">
     <div class="question-title" id="questionTitle"></div>
     <div id="questionContent"></div>
@@ -1172,16 +1375,15 @@ html, body {
   <div class="tavern-scene">
     <div class="tavern-bg-texture"></div>
     <div class="warm-vignette"></div>
-    <div class="dust-container" id="dustContainer3"></div>
     <div class="lamp"></div>
-    <div class="blackboard" style="top:4px;height:auto;font-size:10px;padding:6px 10px;width:auto;min-width:60px;right:8px;left:auto;">
+    <div class="blackboard" style="top:4px;min-height:auto;height:auto;font-size:10px;padding:6px 10px;width:auto;min-width:60px;right:8px;left:auto;">
       <div class="blackboard-title" style="font-size:9px;margin-bottom:2px;">今日运势</div>
       <div id="weatherBoard" style="font-size:14px;">晴</div>
     </div>
     <div class="bar-counter"></div>
   </div>
   <div class="youni-container youni-stage3" id="youniStage3"></div>
-  <div id="stage3Bubble" class="bubble" style="left:130px;top:500px;max-width:200px;"></div>
+  <div id="stage3Bubble" class="bubble" style="left:70px;top:470px;max-width:220px;"></div>
   <div class="wheel-area" id="wheelArea" style="display:none;">
     <canvas id="wheelCanvas" width="280" height="280"></canvas>
     <div class="wheel-pointer" id="wheelPointer">
@@ -1196,15 +1398,26 @@ html, body {
       </svg>
     </div>
     <div class="wheel-pulse" id="wheelPulse"></div>
-    <div id="wheelBtnArea" style="text-align:center;margin-top:12px;">
-      <button class="spin-btn" id="spinBtn" style="margin-right:6px;">转动转盘</button>
-      <button class="choice-btn" id="reshuffleBtn" style="margin-right:6px;">换一换</button>
-      <button class="choice-btn" id="customPickBtn">我想自己选</button>
+    <div class="wheel-tooltip" id="wheelTooltip"></div>
+    <div id="wheelCounter" style="color:#F5A623;font-size:12px;margin-bottom:6px;text-align:center;">5/12</div>
+    <div id="wheelBtnArea" style="text-align:center;margin-top:4px;">
+      <div style="display:flex;justify-content:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+        <button class="wheel-action-btn" id="spinBtn">转动转盘</button>
+        <button class="wheel-action-btn" id="addMoreBtn">加一批</button>
+      </div>
+      <div style="display:flex;justify-content:center;gap:6px;flex-wrap:nowrap;">
+        <button class="wheel-action-btn" id="reshuffleBtn" style="padding:8px 16px;">换一换</button>
+        <button class="wheel-action-btn" id="customPickBtn" style="padding:8px 16px;">我想自己选</button>
+        <button class="wheel-action-btn" id="editPrefStage3Btn" style="padding:8px 14px;font-size:12px;opacity:0.85;">✏️ 修改偏好</button>
+      </div>
     </div>
   </div>
   <div class="input-area" id="inputArea" style="display:none;">
     <input type="text" class="options-input" id="optionsInput" placeholder="输入选项，如：麻辣烫、寿司、沙拉">
     <button class="spin-btn" id="analyzeBtn">让有米分析</button>
+    <div style="margin-top:12px;">
+      <button class="skip-btn" id="backToRecommendBtn">← 回到有米推荐</button>
+    </div>
   </div>
   <div class="analyzing-overlay" id="analyzingOverlay">
     <div class="think-bubble"></div>
@@ -1226,12 +1439,11 @@ html, body {
   <div class="tavern-scene">
     <div class="tavern-bg-texture"></div>
     <div class="warm-vignette"></div>
-    <div class="dust-container" id="dustContainer4"></div>
     <div class="lamp"></div>
     <div class="bar-counter"></div>
   </div>
   <div class="youni-container youni-stage4" id="youniStage4"></div>
-  <div id="stage4Bubble" class="bubble" style="left:130px;top:500px;max-width:200px;"></div>
+  <div id="stage4Bubble" class="bubble" style="left:150px;top:480px;max-width:200px;"></div>
   <div class="feedback-area" id="feedbackArea">
     <div class="feedback-title" id="feedbackTitle">这顿吃得怎么样？</div>
     <div class="feedback-btns" id="feedbackBtns">
@@ -1239,6 +1451,7 @@ html, body {
       <button class="feedback-btn ok" data-rating="ok">&#128528;</button>
       <button class="feedback-btn bad" data-rating="bad">&#128555;</button>
     </div>
+    <button class="skip-feedback-link" id="skipFeedbackBtn">跳过</button>
     <div class="attribution-box" id="attributionBox">
       <p>有米想知道是哪里出了问题...</p>
       <div class="attribution-options">
@@ -1260,12 +1473,11 @@ html, body {
   <div class="tavern-scene">
     <div class="tavern-bg-texture"></div>
     <div class="warm-vignette"></div>
-    <div class="dust-container" id="dustContainer5"></div>
     <div class="lamp"></div>
     <div class="bar-counter"></div>
   </div>
   <div class="youni-container youni-stage5" id="youniStage5"></div>
-  <div id="stage5Bubble" class="bubble" style="left:130px;top:500px;max-width:200px;"></div>
+  <div id="stage5Bubble" class="bubble" style="left:85px;top:10px;max-width:200px;"></div>
   <div class="book-container" id="bookContainer">
     <div class="book" id="bookContent">
       <div class="book-spine"></div>
@@ -1290,279 +1502,646 @@ html, body {
 </div><!-- /app-wrapper -->
 
 <script>
-/* ==================== SVG 有米角色生成 ==================== */
-function createYouniSVG(containerId, options) {
-  options = options || {};
+/* ==================== 有米角色图片渲染 ==================== */
+function createYouniImg(containerId, poseName) {
   var container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = '';
+  var img = document.createElement('img');
+  img.src = 'youni/' + poseName + '.png';
+  img.style.cssText = 'width:140px; height:auto; position:absolute; bottom:0; left:0; pointer-events:none;';
+  container.appendChild(img);
+}
 
-  var showGlasses = options.glasses !== false;
-  var showApron = options.apron !== false;
-
-  var svgNS = 'http://www.w3.org/2000/svg';
-  var svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('viewBox', '0 0 100 120');
-  svg.setAttribute('width', '100');
-  svg.setAttribute('height', '120');
-
-  // Defs
-  var defs = document.createElementNS(svgNS, 'defs');
-  var filter = document.createElementNS(svgNS, 'filter');
-  filter.setAttribute('id', 'ss_' + containerId.replace(/[^a-z0-9]/gi, ''));
-  filter.setAttribute('x', '-20%'); filter.setAttribute('y', '-20%');
-  filter.setAttribute('width', '140%'); filter.setAttribute('height', '140%');
-  var feDrop = document.createElementNS(svgNS, 'feDropShadow');
-  feDrop.setAttribute('dx', '0'); feDrop.setAttribute('dy', '2');
-  feDrop.setAttribute('stdDeviation', '1.5');
-  feDrop.setAttribute('flood-color', 'rgba(0,0,0,0.15)');
-  filter.appendChild(feDrop);
-  defs.appendChild(filter);
-
-  var blushGrad = document.createElementNS(svgNS, 'radialGradient');
-  blushGrad.setAttribute('id', 'bl_' + containerId.replace(/[^a-z0-9]/gi, ''));
-  var s1 = document.createElementNS(svgNS, 'stop');
-  s1.setAttribute('offset', '0%'); s1.setAttribute('stop-color', '#FFD6D6'); s1.setAttribute('stop-opacity', '0.6');
-  var s2 = document.createElementNS(svgNS, 'stop');
-  s2.setAttribute('offset', '100%'); s2.setAttribute('stop-color', '#FFD6D6'); s2.setAttribute('stop-opacity', '0');
-  blushGrad.appendChild(s1); blushGrad.appendChild(s2);
-  defs.appendChild(blushGrad);
-  svg.appendChild(defs);
-
-  // 耳朵
-  var earL = document.createElementNS(svgNS, 'ellipse');
-  earL.setAttribute('cx', '25'); earL.setAttribute('cy', '16');
-  earL.setAttribute('rx', '10'); earL.setAttribute('ry', '12');
-  earL.setAttribute('fill', '#FFF8F0'); earL.setAttribute('stroke', '#EDE0D4'); earL.setAttribute('stroke-width', '0.5');
-  earL.setAttribute('class', 'youni-ear-l');
-  earL.style.transformOrigin = '25px 28px';
-  earL.style.transition = 'transform 0.3s';
-  svg.appendChild(earL);
-
-  var earInL = document.createElementNS(svgNS, 'ellipse');
-  earInL.setAttribute('cx', '25'); earInL.setAttribute('cy', '17');
-  earInL.setAttribute('rx', '6'); earInL.setAttribute('ry', '7');
-  earInL.setAttribute('fill', '#FFD6D6'); earInL.setAttribute('opacity', '0.5');
-  svg.appendChild(earInL);
-
-  var earR = document.createElementNS(svgNS, 'ellipse');
-  earR.setAttribute('cx', '75'); earR.setAttribute('cy', '16');
-  earR.setAttribute('rx', '10'); earR.setAttribute('ry', '12');
-  earR.setAttribute('fill', '#FFF8F0'); earR.setAttribute('stroke', '#EDE0D4'); earR.setAttribute('stroke-width', '0.5');
-  earR.setAttribute('class', 'youni-ear-r');
-  earR.style.transformOrigin = '75px 28px';
-  earR.style.transition = 'transform 0.3s';
-  svg.appendChild(earR);
-
-  var earInR = document.createElementNS(svgNS, 'ellipse');
-  earInR.setAttribute('cx', '75'); earInR.setAttribute('cy', '17');
-  earInR.setAttribute('rx', '6'); earInR.setAttribute('ry', '7');
-  earInR.setAttribute('fill', '#FFD6D6'); earInR.setAttribute('opacity', '0.5');
-  svg.appendChild(earInR);
-
-  // 身体
-  var body = document.createElementNS(svgNS, 'ellipse');
-  body.setAttribute('cx', '50'); body.setAttribute('cy', '90');
-  body.setAttribute('rx', '30'); body.setAttribute('ry', '22');
-  body.setAttribute('fill', '#FFF8F0'); body.setAttribute('stroke', '#EDE0D4'); body.setAttribute('stroke-width', '0.5');
-  body.setAttribute('filter', 'url(#ss_' + containerId.replace(/[^a-z0-9]/gi, '') + ')');
-  svg.appendChild(body);
-
-  // 脚
-  var footL = document.createElementNS(svgNS, 'ellipse');
-  footL.setAttribute('cx', '38'); footL.setAttribute('cy', '108');
-  footL.setAttribute('rx', '10'); footL.setAttribute('ry', '6');
-  footL.setAttribute('fill', '#FFF8F0'); footL.setAttribute('stroke', '#EDE0D4'); footL.setAttribute('stroke-width', '0.5');
-  svg.appendChild(footL);
-  var footR = document.createElementNS(svgNS, 'ellipse');
-  footR.setAttribute('cx', '62'); footR.setAttribute('cy', '108');
-  footR.setAttribute('rx', '10'); footR.setAttribute('ry', '6');
-  footR.setAttribute('fill', '#FFF8F0'); footR.setAttribute('stroke', '#EDE0D4'); footR.setAttribute('stroke-width', '0.5');
-  svg.appendChild(footR);
-
-  // 围裙
-  if (showApron) {
-    var apronG = document.createElementNS(svgNS, 'g');
-    apronG.setAttribute('class', 'youni-apron-svg');
-    if (options.apronAnimate) { apronG.style.animation = 'apronOn 0.5s ease-out'; }
-    var apronNeck = document.createElementNS(svgNS, 'path');
-    apronNeck.setAttribute('d', 'M 42 70 Q 50 65 58 70');
-    apronNeck.setAttribute('fill', 'none'); apronNeck.setAttribute('stroke', '#F0F0F0'); apronNeck.setAttribute('stroke-width', '2');
-    apronG.appendChild(apronNeck);
-    var apronBody = document.createElementNS(svgNS, 'path');
-    apronBody.setAttribute('d', 'M 35 72 Q 50 68 65 72 L 63 100 Q 50 105 37 100 Z');
-    apronBody.setAttribute('fill', '#F5F5F5'); apronBody.setAttribute('stroke', '#E8E8E8'); apronBody.setAttribute('stroke-width', '0.5');
-    apronG.appendChild(apronBody);
-    var pocket = document.createElementNS(svgNS, 'rect');
-    pocket.setAttribute('x', '43'); pocket.setAttribute('y', '82');
-    pocket.setAttribute('width', '14'); pocket.setAttribute('height', '10');
-    pocket.setAttribute('rx', '3'); pocket.setAttribute('fill', '#E8E8E8');
-    apronG.appendChild(pocket);
-    var bow = document.createElementNS(svgNS, 'path');
-    bow.setAttribute('d', 'M 47 72 Q 42 68 44 72 Q 42 76 47 72 M 53 72 Q 58 68 56 72 Q 58 76 53 72');
-    bow.setAttribute('fill', '#E8E8E8');
-    apronG.appendChild(bow);
-    svg.appendChild(apronG);
+function setYouniPose(containerId, poseName) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  var img = container.querySelector('img');
+  if (img) {
+    img.src = 'youni/' + poseName + '.png';
   }
-
-  // 手臂
-  var armL = document.createElementNS(svgNS, 'ellipse');
-  armL.setAttribute('cx', '22'); armL.setAttribute('cy', '85');
-  armL.setAttribute('rx', '8'); armL.setAttribute('ry', '12');
-  armL.setAttribute('fill', '#FFF8F0'); armL.setAttribute('stroke', '#EDE0D4'); armL.setAttribute('stroke-width', '0.5');
-  armL.setAttribute('class', 'youni-arm-l');
-  armL.style.transformOrigin = '30px 85px';
-  armL.style.transition = 'transform 0.3s';
-  svg.appendChild(armL);
-  var armR = document.createElementNS(svgNS, 'ellipse');
-  armR.setAttribute('cx', '78'); armR.setAttribute('cy', '85');
-  armR.setAttribute('rx', '8'); armR.setAttribute('ry', '12');
-  armR.setAttribute('fill', '#FFF8F0'); armR.setAttribute('stroke', '#EDE0D4'); armR.setAttribute('stroke-width', '0.5');
-  armR.setAttribute('class', 'youni-arm-r');
-  armR.style.transformOrigin = '70px 85px';
-  armR.style.transition = 'transform 0.3s';
-  svg.appendChild(armR);
-
-  // 头
-  var head = document.createElementNS(svgNS, 'ellipse');
-  head.setAttribute('cx', '50'); head.setAttribute('cy', '40');
-  head.setAttribute('rx', '30'); head.setAttribute('ry', '28');
-  head.setAttribute('fill', '#FFF8F0'); head.setAttribute('stroke', '#EDE0D4'); head.setAttribute('stroke-width', '0.5');
-  head.setAttribute('filter', 'url(#ss_' + containerId.replace(/[^a-z0-9]/gi, '') + ')');
-  svg.appendChild(head);
-
-  // 腮红
-  var bL = document.createElementNS(svgNS, 'ellipse');
-  bL.setAttribute('cx', '28'); bL.setAttribute('cy', '42');
-  bL.setAttribute('rx', '8'); bL.setAttribute('ry', '5');
-  bL.setAttribute('fill', 'url(#bl_' + containerId.replace(/[^a-z0-9]/gi, '') + ')');
-  svg.appendChild(bL);
-  var bR = document.createElementNS(svgNS, 'ellipse');
-  bR.setAttribute('cx', '72'); bR.setAttribute('cy', '42');
-  bR.setAttribute('rx', '8'); bR.setAttribute('ry', '5');
-  bR.setAttribute('fill', 'url(#bl_' + containerId.replace(/[^a-z0-9]/gi, '') + ')');
-  svg.appendChild(bR);
-
-  // 眼睛
-  var eyeL = document.createElementNS(svgNS, 'ellipse');
-  eyeL.setAttribute('cx', '38'); eyeL.setAttribute('cy', '35');
-  eyeL.setAttribute('rx', '5'); eyeL.setAttribute('ry', '6');
-  eyeL.setAttribute('fill', '#2C1810'); eyeL.setAttribute('class', 'youni-eye-l');
-  eyeL.style.transformOrigin = '38px 35px';
-  eyeL.style.animation = 'blink 4s infinite';
-  svg.appendChild(eyeL);
-  var eyeR = document.createElementNS(svgNS, 'ellipse');
-  eyeR.setAttribute('cx', '62'); eyeR.setAttribute('cy', '35');
-  eyeR.setAttribute('rx', '5'); eyeR.setAttribute('ry', '6');
-  eyeR.setAttribute('fill', '#2C1810'); eyeR.setAttribute('class', 'youni-eye-r');
-  eyeR.style.transformOrigin = '62px 35px';
-  eyeR.style.animation = 'blink 4s infinite';
-  svg.appendChild(eyeR);
-
-  // 高光
-  svg.appendChild(makeC(svgNS, 40, 33, 2, '#fff'));
-  svg.appendChild(makeC(svgNS, 36, 37, 1, '#fff'));
-  svg.appendChild(makeC(svgNS, 64, 33, 2, '#fff'));
-  svg.appendChild(makeC(svgNS, 60, 37, 1, '#fff'));
-
-  // 鼻子
-  var nose = document.createElementNS(svgNS, 'ellipse');
-  nose.setAttribute('cx', '50'); nose.setAttribute('cy', '40');
-  nose.setAttribute('rx', '3'); nose.setAttribute('ry', '2.5');
-  nose.setAttribute('fill', '#FFB6C1');
-  svg.appendChild(nose);
-
-  // 嘴
-  var mouth = document.createElementNS(svgNS, 'path');
-  mouth.setAttribute('d', 'M 44 44 Q 50 48 56 44');
-  mouth.setAttribute('fill', 'none'); mouth.setAttribute('stroke', '#D4A574'); mouth.setAttribute('stroke-width', '1.5');
-  mouth.setAttribute('stroke-linecap', 'round');
-  mouth.setAttribute('class', 'youni-mouth-path');
-  mouth.style.transition = 'd 0.3s';
-  svg.appendChild(mouth);
-
-  // 眼镜
-  if (showGlasses) {
-    var gG = document.createElementNS(svgNS, 'g');
-    gG.setAttribute('class', 'youni-glasses-svg');
-    if (options.glassesAnimate) { gG.style.animation = 'glassesOn 0.6s ease-out'; }
-    gG.appendChild(makeCirc(svgNS, 38, 35, 12, 'rgba(255,255,255,0.1)', '#8B4513', 2));
-    gG.appendChild(makeCirc(svgNS, 62, 35, 12, 'rgba(255,255,255,0.1)', '#8B4513', 2));
-    var bridge = document.createElementNS(svgNS, 'path');
-    bridge.setAttribute('d', 'M 49 34 Q 50 32 51 34');
-    bridge.setAttribute('fill', 'none'); bridge.setAttribute('stroke', '#8B4513'); bridge.setAttribute('stroke-width', '2');
-    gG.appendChild(bridge);
-    var tL = document.createElementNS(svgNS, 'line');
-    tL.setAttribute('x1', '26'); tL.setAttribute('y1', '33');
-    tL.setAttribute('x2', '22'); tL.setAttribute('y2', '34');
-    tL.setAttribute('stroke', '#8B4513'); tL.setAttribute('stroke-width', '1.5');
-    gG.appendChild(tL);
-    var tR = document.createElementNS(svgNS, 'line');
-    tR.setAttribute('x1', '74'); tR.setAttribute('y1', '33');
-    tR.setAttribute('x2', '78'); tR.setAttribute('y2', '34');
-    tR.setAttribute('stroke', '#8B4513'); tR.setAttribute('stroke-width', '1.5');
-    gG.appendChild(tR);
-    svg.appendChild(gG);
-  }
-
-  container.appendChild(svg);
-  return svg;
 }
 
-function makeC(ns, cx, cy, r, fill) {
-  var c = document.createElementNS(ns, 'circle');
-  c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', r); c.setAttribute('fill', fill);
-  return c;
+function showYouniPoseSeq(containerId, sequence) {
+  return sequence.reduce(function(promise, step) {
+    return promise.then(function() {
+      return new Promise(function(resolve) {
+        setYouniPose(containerId, step.pose);
+        setTimeout(resolve, step.duration);
+      });
+    });
+  }, Promise.resolve());
 }
-function makeCirc(ns, cx, cy, r, fill, stroke, sw) {
-  var c = document.createElementNS(ns, 'circle');
-  c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', r); c.setAttribute('fill', fill);
-  c.setAttribute('stroke', stroke); c.setAttribute('stroke-width', sw);
-  return c;
+
+function startYouniIdle(containerId) {
+  var blinkTimer = setInterval(function() {
+    var container = document.getElementById(containerId);
+    if (!container) { clearInterval(blinkTimer); return; }
+    var img = container.querySelector('img');
+    if (!img) return;
+    var currentSrc = img.src;
+    img.src = 'youni/11-idle-blink.png';
+    setTimeout(function() {
+      if (img) img.src = currentSrc;
+    }, 200);
+  }, 5000 + Math.random() * 3000);
+  return blinkTimer;
 }
+
 
 /* ==================== 浮尘粒子 ==================== */
-function initDustParticles(containerId) {
-  var container = document.getElementById(containerId);
-  if (!container || container._dustInit) return;
-  container._dustInit = true;
-  var colors = ['#F5A623', '#D4A574', '#FFD700', '#FFF8F0', '#C49A6C'];
-  function spawnDust() {
-    var count = 15 + Math.floor(Math.random() * 6);
-    for (var i = 0; i < count; i++) {
-      (function(idx) {
-        var p = document.createElement('div');
-        p.className = 'dust-particle';
-        var size = 2 + Math.random() * 3;
-        p.style.width = size + 'px';
-        p.style.height = size + 'px';
-        p.style.left = Math.random() * 100 + '%';
-        p.style.top = Math.random() * 100 + '%';
-        p.style.background = colors[Math.floor(Math.random() * colors.length)];
-        var dur = 6 + Math.random() * 8;
-        p.style.setProperty('--dur', dur + 's');
-        p.style.setProperty('--dx', (Math.random() * 40 - 20) + 'px');
-        p.style.setProperty('--dy', (-30 - Math.random() * 50) + 'px');
-        p.style.animationDelay = (Math.random() * dur) + 's';
-        container.appendChild(p);
-        setTimeout(function() { p.remove(); spawnDust(); }, (dur + Math.random() * dur) * 1000);
-      })(i);
-    }
-  }
-  spawnDust();
-}
-
 /* ==================== 全局状态与工具 ==================== */
 var state = {
-  preferences: { spicy: null, soup: null, taboo: '' },
+  preferences: { spicy: null, soup: null, taboo: '', staple: null, flavor: null },
   history: [],
   unlocked: 0,
   currentResult: null,
   currentOptions: [],
   currentWeights: [],
   currentWeather: '',
-  currentPage: 0
+  currentPage: 0,
+  spinTimestamps: []
 };
+
+var DIALOGUES = {
+  stage3_intro: [
+    '大人驾到！有米已经根据您的口味备好菜单啦，要不要转一转？',
+    '来啦来啦~ 有米精心挑选了几个选项，看看有没有让大人心动的？',
+    '欢迎光临有米小馆！今天也在努力猜大人想吃什么呢~',
+    '大人今天想吃点啥？有米这就帮您安排！',
+    '叮~ 今日推荐已就位！让有米帮大人决定今天的美味吧！'
+  ],
+  stage3_reshuffle: [
+    '好嘞！有米这就去换一批新鲜的~ 看看这次合不合心意？',
+    '没问题！有米马上帮大人重新挑选！',
+    '不合心意吗？有米再去搜罗搜罗好吃的！',
+    '收到！有米这就换一批更棒的推荐来！',
+    '好哒！让有米再想想还有什么好吃的等着大人~'
+  ],
+  stage3_spin_first: [
+    '哇哦！转到了「{result}」！这可是有米的得意推荐呢！',
+    '太棒啦！是「{result}」！大人简直太会选了~',
+    '耶！转到「{result}」啦！有米早就觉得这个最适合大人！',
+    '天呐！是「{result}」！大人的运气也太好了吧~',
+    '完美！「{result}」可是有米偷偷藏在转盘里的惊喜呢！'
+  ],
+  stage3_spin_other: [
+    '当当~ 转盘停在了「{result}」，今天就吃这个吧！',
+    '转到「{result}」啦！有米觉得这个也很不错呢~',
+    '是「{result}」哦！希望大人吃得开心！',
+    '哇~ 结果是「{result}」！快去享受美味吧！',
+    '「{result}」！有米觉得这个和今天的天气超配的！'
+  ],
+  stage4_good: [
+    '耶耶耶！有米好开心！大人喜欢就是最大的动力~',
+    '真的吗！有米要开心到转圈啦！下次还要给大人推荐！',
+    '嘿嘿~ 果然还是有米最懂大人的口味！',
+    '太棒啦！有米已经把这个记在小本本上啦！',
+    '哇哦~ 大人喜欢就好！有米今天也超级满足！'
+  ],
+  stage4_ok: [
+    '嗯...一般般吗？有米记下了，下次一定更努力！',
+    '这样啊... 有米会继续学习大人的口味哒！',
+    '下次有米一定推荐更合胃口的！包大人满意！',
+    '收到~ 有米会再接再厉的！',
+    '好哒！有米记住了，下次给大人惊喜！'
+  ],
+  stage4_bad: [
+    '呜...有米搞砸了... 大人对不起...',
+    '呜呜~ 是有米不好，让大人失望了...',
+    '对、对不起... 有米下次一定更仔细！',
+    '呜哇~ 大人不要生气呀... 有米会好好反省的...',
+    '对不起对不起！有米这就把教训写在小本本上！'
+  ],
+  stage4_bad_after: [
+    '有米记住了！下次一定不会再让大人失望！',
+    '收到！有米都记在小本本上了！',
+    '好的... 有米会好好反省，下次一定改进！',
+    '大人的话有米都记住了！下次绝不再犯！',
+    '嗯！有米会加油的，下次一定让大人满意！'
+  ],
+  stage5_intro: [
+    '当当！这是有米为大人记录的美食图鉴！',
+    '看~ 这都是有米一笔一划认真记下来的哦！',
+    '大人的每一次选择，有米都记得清清楚楚呢~',
+    '这是有米的小本本，里面全是和大人的美味回忆！',
+    '来看看吧~ 有米偷偷记录了好多好多有趣的事情呢！'
+  ]
+};
+
+function pickDialogue(key, vars) {
+  var list = DIALOGUES[key];
+  if (!list || list.length === 0) return '';
+  var text = list[Math.floor(Math.random() * list.length)];
+  if (vars) {
+    for (var k in vars) {
+      text = text.replace('{' + k + '}', vars[k]);
+    }
+  }
+  return text;
+}
+
+/* ==================== 音效管理器 ==================== */
+var SoundManager = (function() {
+  var audioContext = null;
+  var sfxEnabled = true;
+  var bgmEnabled = true;
+  var sfxVolume = 0.6;
+  var bgmVolume = 0.25;
+  var currentBgm = null;
+  var bgmGain = null;
+  var bgmOscillators = [];
+  var bgmTimer = null;
+  var bgmNoteIdx = 0;
+  var currentStage = 'stage1';
+
+  var STORAGE_KEY = 'youmi_sound_settings';
+
+  var BGM_MELODIES = {
+    stage1: {
+      notes: [
+        { f: 330, d: 0.5 }, { f: 392, d: 0.5 }, { f: 440, d: 0.5 }, { f: 523, d: 0.5 },
+        { f: 494, d: 0.5 }, { f: 440, d: 0.5 }, { f: 392, d: 1 },
+        { f: 349, d: 0.5 }, { f: 440, d: 0.5 }, { f: 523, d: 0.5 }, { f: 659, d: 0.5 },
+        { f: 587, d: 0.5 }, { f: 523, d: 0.5 }, { f: 440, d: 1 }
+      ],
+      tempo: 0.35,
+      type: 'triangle'
+    },
+    stage2: {
+      notes: [
+        { f: 262, d: 0.4 }, { f: 330, d: 0.4 }, { f: 392, d: 0.4 },
+        { f: 349, d: 0.4 }, { f: 294, d: 0.4 }, { f: 262, d: 0.8 },
+        { f: 294, d: 0.4 }, { f: 349, d: 0.4 }, { f: 440, d: 0.4 },
+        { f: 392, d: 0.4 }, { f: 330, d: 0.4 }, { f: 262, d: 0.8 }
+      ],
+      tempo: 0.3,
+      type: 'sine'
+    },
+    stage3: {
+      notes: [
+        { f: 523, d: 0.3 }, { f: 587, d: 0.3 }, { f: 659, d: 0.3 }, { f: 784, d: 0.6 },
+        { f: 659, d: 0.3 }, { f: 784, d: 0.3 }, { f: 880, d: 0.3 }, { f: 1047, d: 0.6 },
+        { f: 784, d: 0.3 }, { f: 880, d: 0.3 }, { f: 784, d: 0.3 }, { f: 659, d: 0.6 },
+        { f: 587, d: 0.3 }, { f: 659, d: 0.3 }, { f: 587, d: 0.3 }, { f: 523, d: 0.6 }
+      ],
+      tempo: 0.25,
+      type: 'sine'
+    },
+    stage4: {
+      notes: [
+        { f: 523, d: 0.5 }, { f: 659, d: 0.5 }, { f: 784, d: 1 },
+        { f: 659, d: 0.5 }, { f: 523, d: 0.5 }, { f: 440, d: 1 },
+        { f: 494, d: 0.5 }, { f: 587, d: 0.5 }, { f: 740, d: 1 },
+        { f: 587, d: 0.5 }, { f: 494, d: 0.5 }, { f: 392, d: 1 }
+      ],
+      tempo: 0.3,
+      type: 'sine'
+    },
+    stage5: {
+      notes: [
+        { f: 330, d: 0.6 }, { f: 392, d: 0.6 }, { f: 494, d: 0.6 }, { f: 659, d: 0.6 },
+        { f: 587, d: 0.6 }, { f: 494, d: 0.6 }, { f: 392, d: 1.2 },
+        { f: 349, d: 0.6 }, { f: 440, d: 0.6 }, { f: 523, d: 0.6 }, { f: 698, d: 0.6 },
+        { f: 587, d: 0.6 }, { f: 523, d: 0.6 }, { f: 440, d: 1.2 }
+      ],
+      tempo: 0.3,
+      type: 'triangle'
+    }
+  };
+
+  function loadSettings() {
+    try {
+      var s = localStorage.getItem(STORAGE_KEY);
+      if (s) {
+        var obj = JSON.parse(s);
+        if (typeof obj.sfxEnabled !== 'undefined') sfxEnabled = obj.sfxEnabled;
+        if (typeof obj.bgmEnabled !== 'undefined') bgmEnabled = obj.bgmEnabled;
+        if (typeof obj.sfxVolume !== 'undefined') sfxVolume = obj.sfxVolume;
+        if (typeof obj.bgmVolume !== 'undefined') bgmVolume = obj.bgmVolume;
+      }
+    } catch (e) {}
+  }
+
+  function saveSettings() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        sfxEnabled: sfxEnabled,
+        bgmEnabled: bgmEnabled,
+        sfxVolume: sfxVolume,
+        bgmVolume: bgmVolume
+      }));
+    } catch (e) {}
+  }
+
+  function init() {
+    if (!audioContext) {
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {
+        sfxEnabled = false;
+        bgmEnabled = false;
+        return;
+      }
+    }
+    if (audioContext && audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+  }
+
+  function playWarmTone(freq, duration, vol, attack, release, pan) {
+    if (!sfxEnabled) return;
+    init();
+    if (!audioContext) return;
+
+    attack = attack || 0.02;
+    release = release || 0.1;
+    duration = Math.max(duration, attack + release + 0.01);
+
+    var osc1 = audioContext.createOscillator();
+    var osc2 = audioContext.createOscillator();
+    var gain = audioContext.createGain();
+    var filter = audioContext.createBiquadFilter();
+    var panner = null;
+
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(freq, audioContext.currentTime);
+
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(freq * 2, audioContext.currentTime);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(freq * 4, audioContext.currentTime);
+    filter.Q.value = 1;
+
+    if (typeof pan !== 'undefined' && audioContext.createStereoPanner) {
+      panner = audioContext.createStereoPanner();
+      panner.pan.value = Math.max(-1, Math.min(1, pan));
+    }
+
+    var t = audioContext.currentTime;
+    var peakVol = vol * sfxVolume;
+    var attackTime = t + Math.min(attack, duration * 0.3);
+    var sustainTime = Math.max(attackTime + 0.001, t + duration - release);
+    var endTime = Math.max(sustainTime + 0.001, t + duration);
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(peakVol, attackTime);
+    gain.gain.linearRampToValueAtTime(peakVol * 0.7, sustainTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, endTime);
+
+    var osc2Gain = audioContext.createGain();
+    osc2Gain.gain.value = 0.3;
+
+    osc1.connect(filter);
+    osc2.connect(osc2Gain);
+    osc2Gain.connect(filter);
+    filter.connect(gain);
+
+    if (panner) {
+      gain.connect(panner);
+      panner.connect(audioContext.destination);
+    } else {
+      gain.connect(audioContext.destination);
+    }
+
+    osc1.start(t);
+    osc2.start(t);
+    osc1.stop(t + duration);
+    osc2.stop(t + duration);
+  }
+
+  function playNoise(duration, vol, filterFreq, pan) {
+    if (!sfxEnabled) return;
+    init();
+    if (!audioContext) return;
+
+    var bufferSize = audioContext.sampleRate * duration;
+    var buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+    var data = buffer.getChannelData(0);
+    for (var i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    var source = audioContext.createBufferSource();
+    source.buffer = buffer;
+
+    var filter = audioContext.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = filterFreq || 2000;
+
+    var gain = audioContext.createGain();
+    var panner = null;
+    var t = audioContext.currentTime;
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(vol * sfxVolume, t + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+
+    if (typeof pan !== 'undefined' && audioContext.createStereoPanner) {
+      panner = audioContext.createStereoPanner();
+      panner.pan.value = Math.max(-1, Math.min(1, pan));
+    }
+
+    source.connect(filter);
+    filter.connect(gain);
+    if (panner) {
+      gain.connect(panner);
+      panner.connect(audioContext.destination);
+    } else {
+      gain.connect(audioContext.destination);
+    }
+
+    source.start(t);
+  }
+
+  var CROSSFADE_DURATION = 2.0;
+
+  function stopBgm() {
+    if (bgmTimer) {
+      clearTimeout(bgmTimer);
+      bgmTimer = null;
+    }
+    if (bgmGain) {
+      var oldGain = bgmGain;
+      var t = audioContext.currentTime;
+      oldGain.gain.cancelScheduledValues(t);
+      var currentVol = oldGain.gain.value;
+      oldGain.gain.setValueAtTime(currentVol, t);
+      oldGain.gain.linearRampToValueAtTime(0, t + CROSSFADE_DURATION);
+      setTimeout(function() {
+        bgmOscillators.forEach(function(o) {
+          try { o.stop(); } catch (e) {}
+        });
+        bgmOscillators = [];
+        try { oldGain.disconnect(); } catch (e) {}
+      }, CROSSFADE_DURATION * 1000 + 100);
+    }
+    currentBgm = null;
+    bgmGain = null;
+  }
+
+  function playBgmNote(melody, noteIdx) {
+    if (!bgmEnabled || !audioContext) return;
+    if (currentBgm !== melody) return;
+    if (!bgmGain) return;
+
+    var note = melody.notes[noteIdx % melody.notes.length];
+    var noteDur = note.d * melody.tempo;
+    var gapDur = noteDur * 0.6;
+    var totalDur = noteDur + gapDur;
+
+    var osc = audioContext.createOscillator();
+    osc.type = melody.type;
+    osc.frequency.setValueAtTime(note.f, audioContext.currentTime);
+
+    var filter = audioContext.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = note.f * 3;
+    filter.Q.value = 0.5;
+
+    var gain = audioContext.createGain();
+    var t = audioContext.currentTime;
+    var noteVol = bgmVolume * 0.35;
+    var attack = noteDur * 0.2;
+    var release = noteDur * 0.3;
+    var attackTime = t + attack;
+    var sustainTime = Math.max(attackTime + 0.001, t + noteDur - release);
+    var endTime = Math.max(sustainTime + 0.001, t + noteDur);
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(noteVol, attackTime);
+    gain.gain.linearRampToValueAtTime(noteVol * 0.5, sustainTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, endTime);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(bgmGain);
+    osc.start(t);
+    osc.stop(t + noteDur + 0.05);
+
+    bgmOscillators.push(osc);
+
+    bgmNoteIdx = noteIdx + 1;
+    bgmTimer = setTimeout(function() {
+      playBgmNote(melody, bgmNoteIdx);
+    }, totalDur * 1000);
+  }
+
+  function startBgm(stage) {
+    init();
+    if (!audioContext || !bgmEnabled) return;
+
+    var melody = BGM_MELODIES[stage];
+    if (!melody) return;
+
+    if (currentBgm === melody) return;
+
+    var oldGain = bgmGain;
+
+    var newGain = audioContext.createGain();
+    newGain.gain.value = 0;
+    newGain.connect(audioContext.destination);
+
+    var t = audioContext.currentTime;
+
+    if (oldGain) {
+      oldGain.gain.cancelScheduledValues(t);
+      var currentVol = oldGain.gain.value;
+      oldGain.gain.setValueAtTime(currentVol, t);
+      oldGain.gain.linearRampToValueAtTime(0, t + CROSSFADE_DURATION);
+      var oldGainRef = oldGain;
+      setTimeout(function() {
+        try { oldGainRef.disconnect(); } catch (e) {}
+      }, CROSSFADE_DURATION * 1000 + 100);
+    }
+
+    if (bgmTimer) {
+      clearTimeout(bgmTimer);
+      bgmTimer = null;
+    }
+
+    bgmGain = newGain;
+    currentBgm = melody;
+    bgmNoteIdx = 0;
+
+    newGain.gain.linearRampToValueAtTime(1, t + CROSSFADE_DURATION);
+
+    setTimeout(function() {
+      if (currentBgm === melody && bgmGain === newGain) {
+        playBgmNote(melody, 0);
+      }
+    }, CROSSFADE_DURATION * 0.5 * 1000);
+  }
+
+  function setBgmStage(stage) {
+    currentStage = stage;
+    startBgm(stage);
+  }
+
+  function getWheelPan(angle) {
+    return Math.sin(angle);
+  }
+
+  loadSettings();
+
+  return {
+    init: init,
+    saveSettings: saveSettings,
+
+    setSfxEnabled: function(val) { sfxEnabled = val; saveSettings(); },
+    getSfxEnabled: function() { return sfxEnabled; },
+    setBgmEnabled: function(val) {
+      bgmEnabled = val;
+      saveSettings();
+      if (!val) { stopBgm(); }
+      else { startBgm(currentStage); }
+    },
+    getBgmEnabled: function() { return bgmEnabled; },
+    setSfxVolume: function(val) { sfxVolume = Math.max(0, Math.min(1, val)); saveSettings(); },
+    getSfxVolume: function() { return sfxVolume; },
+    setBgmVolume: function(val) {
+      bgmVolume = Math.max(0, Math.min(1, val));
+      saveSettings();
+      if (bgmGain) {
+        bgmGain.gain.setTargetAtTime(bgmVolume, audioContext.currentTime, 0.3);
+      }
+    },
+    getBgmVolume: function() { return bgmVolume; },
+
+    setStage: setBgmStage,
+    stopBgm: stopBgm,
+
+    buttonClick: function() {
+      playWarmTone(660, 0.06, 0.25);
+    },
+
+    stageTransition: function() {
+      playWarmTone(440, 0.25, 0.15);
+      setTimeout(function() { playWarmTone(554, 0.2, 0.12); }, 120);
+    },
+
+    bubbleShow: function() {
+      playWarmTone(523, 0.08, 0.12);
+      setTimeout(function() { playWarmTone(659, 0.06, 0.08); }, 60);
+    },
+
+    typewriter: function() {
+      playWarmTone(900 + Math.random() * 300, 0.02, 0.06, 0.005, 0.01);
+    },
+
+    thinking: function() {
+      playWarmTone(300, 0.4, 0.08, 0.1, 0.2);
+    },
+
+    yawning: function() {
+      playWarmTone(220, 0.6, 0.1, 0.1, 0.3, 0);
+      setTimeout(function() { playWarmTone(180, 0.4, 0.06, 0.05, 0.2); }, 200);
+    },
+
+    happy: function() {
+      var notes = [523, 659, 784, 1047];
+      notes.forEach(function(n, i) {
+        setTimeout(function() { playWarmTone(n, 0.18, 0.2); }, i * 90);
+      });
+    },
+
+    surprised: function() {
+      playWarmTone(784, 0.1, 0.22);
+      setTimeout(function() { playWarmTone(988, 0.15, 0.18); }, 80);
+    },
+
+    eureka: function() {
+      var notes = [392, 523, 659, 784];
+      notes.forEach(function(n, i) {
+        setTimeout(function() { playWarmTone(n, 0.12, 0.2); }, i * 80);
+      });
+    },
+
+    wheelStart: function() {
+      playWarmTone(150, 0.3, 0.2, 0.02, 0.15);
+      setTimeout(function() { playWarmTone(200, 0.25, 0.15, 0.02, 0.1); }, 50);
+    },
+
+    wheelTick: function(pan, volMul) {
+      volMul = volMul || 1;
+      playWarmTone(330 + Math.random() * 80, 0.05, 0.05 * volMul, 0.008, 0.02, pan);
+    },
+
+    wheelStop: function() {
+      playWarmTone(200, 0.4, 0.2, 0.02, 0.25);
+      playNoise(0.25, 0.1, 800);
+    },
+
+    success: function() {
+      playWarmTone(523, 0.08, 0.18);
+      setTimeout(function() { playWarmTone(659, 0.08, 0.18); }, 90);
+      setTimeout(function() { playWarmTone(784, 0.18, 0.22); }, 180);
+    },
+
+    error: function() {
+      playWarmTone(294, 0.12, 0.18);
+      setTimeout(function() { playWarmTone(220, 0.2, 0.15); }, 100);
+    },
+
+    eggClick: function() {
+      init();
+      playWarmTone(600, 0.12, 0.4);
+      playNoise(0.1, 0.3, 3000);
+    },
+
+    eggCrack: function() {
+      init();
+      playNoise(0.15, 0.5, 2000);
+      playNoise(0.12, 0.45, 3500, -0.3);
+      playNoise(0.1, 0.4, 2500, 0.3);
+      playWarmTone(200, 0.35, 0.25, 0.01, 0.12);
+      playWarmTone(150, 0.25, 0.2, 0.01, 0.1);
+    },
+
+    eggHatch: function() {
+      init();
+      playNoise(0.25, 0.6, 1500);
+      playNoise(0.2, 0.55, 2800, -0.4);
+      playNoise(0.22, 0.5, 2000, 0.4);
+      playNoise(0.15, 0.45, 3500);
+      playWarmTone(100, 0.4, 0.2, 0.02, 0.2);
+      setTimeout(function() { playWarmTone(180, 0.3, 0.25, 0.01, 0.15); }, 60);
+    },
+
+    youniAppear: function() {
+      var notes = [440, 554, 659];
+      notes.forEach(function(n, i) {
+        setTimeout(function() { playWarmTone(n, 0.22, 0.18); }, i * 130);
+      });
+    },
+
+    addOption: function() {
+      playWarmTone(523, 0.06, 0.12);
+    },
+
+    removeOption: function() {
+      playWarmTone(392, 0.06, 0.08);
+    },
+
+    keyboard: function() {
+      playWarmTone(880, 0.04, 0.1, 0.005, 0.01);
+    }
+  };
+})();
+
+function getTimeGreeting() {
+  var hour = new Date().getHours();
+  if (hour >= 6 && hour < 10) {
+    return '大人早上好！有米准备了早餐选项~';
+  } else if (hour >= 10 && hour < 14) {
+    return '中午到啦！大人想吃点什么？';
+  } else if (hour >= 14 && hour < 17) {
+    return '下午好~ 要不要来个下午茶？';
+  } else if (hour >= 17 && hour < 22) {
+    return '大人辛苦了一天，有米准备了好吃的！';
+  } else if (hour >= 22 || hour < 6) {
+    return '夜深了，大人要不要来点夜宵？';
+  }
+  return null;
+}
 
 var STORAGE_KEY = 'youni_data';
 
@@ -1594,8 +2173,14 @@ function getToday() {
 }
 
 function getWeather() {
-  var day = new Date().getDate();
-  return day % 2 === 1 ? '晴' : '雨';
+  var d = new Date();
+  var seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+  var hash = (seed * 9301 + 49297) % 233280;
+  var rnd = hash / 233280;
+  if (rnd < 0.35) return '晴';
+  if (rnd < 0.6) return '多云';
+  if (rnd < 0.8) return '阴';
+  return '雨';
 }
 
 /* 打字机效果 */
@@ -1620,6 +2205,7 @@ function typeText(element, text, speed) {
       if (ctrl.cancelled) return;
       if (i < text.length) {
         element.textContent += text.charAt(i);
+        SoundManager.typewriter();
         i++;
         ctrl.timerId = setTimeout(step, speed);
       } else {
@@ -1638,7 +2224,16 @@ function showStage(id) {
   if (transitioning) return;
   var currentActive = document.querySelector('.stage.active');
   var nextStage = document.getElementById(id);
-  if (!nextStage || currentActive === nextStage) return;
+  if (!nextStage) return;
+
+  if (id === 'stage1') {
+    resetStage1();
+  }
+
+  if (currentActive === nextStage) return;
+
+  SoundManager.stageTransition();
+  SoundManager.setStage(id);
 
   if (currentActive && currentActive.id !== 'stage1') {
     transitioning = true;
@@ -1657,13 +2252,17 @@ function showStage(id) {
       nextStage.classList.remove('slide-in');
     }, { once: true });
   } else {
-    document.querySelectorAll('.stage').forEach(function(s) { s.classList.remove('active'); });
+    document.querySelectorAll('.stage').forEach(function(s) {
+      s.classList.remove('active');
+      s.style.display = 'none';
+    });
+    nextStage.style.display = 'flex';
     nextStage.classList.add('active');
   }
 }
 
 function createStars(container, count) {
-  count = count || 6;
+  count = count || 4;
   for (var i = 0; i < count; i++) {
     var star = document.createElement('div');
     star.className = 'star';
@@ -1702,19 +2301,24 @@ function removeSadOverlay() {
 
 /* ==================== 菜品数据库 ==================== */
 var DISH_DB = {
-  rainy: ['麻辣烫','酸辣粉','火锅','拉面','热汤面','关东煮','牛肉面','馄饨'],
-  sunny: ['沙拉','寿司','凉面','凉皮','冰粉','轻食碗','三明治','冷面'],
-  spicy: ['麻辣烫','火锅','酸辣粉','麻辣香锅','重庆小面','剁椒鱼头','辣子鸡'],
-  mild: ['白粥','清汤面','蒸蛋','小馄饨','煲仔饭','广式茶点','云吞面'],
-  soup: ['拉面','馄饨','汤饭','粥品','麻辣烫','牛肉汤','酸辣汤'],
-  nosoup: ['炒饭','炒面','煎饼','汉堡','烧烤','盖浇饭','煲仔饭']
+  rainy: ['麻辣烫','酸辣粉','火锅','拉面','热汤面','关东煮','牛肉面','馄饨','螺蛳粉','冒菜','老鸭汤','牛腩煲','砂锅粥'],
+  sunny: ['沙拉','寿司','凉面','凉皮','冰粉','轻食碗','三明治','冷面','刨冰','抹茶拿铁','手冲咖啡','水果沙拉','凉皮卷','麻酱拌面'],
+  cloudy: ['盖浇饭','煲仔饭','拉面','炒饭','炒面','汉堡','寿司','麻辣烫','焗饭','咖喱饭','卤肉饭','炒河粉','螺蛳粉','石锅拌饭'],
+  overcast: ['汤面','馄饨','煲仔饭','粥品','牛肉面','云吞面','炒饭','烩饭','皮蛋瘦肉粥','鱼片粥','南瓜粥','砂锅米线','老鸭粉丝汤','菌菇汤'],
+  spicy: ['麻辣烫','火锅','酸辣粉','麻辣香锅','重庆小面','剁椒鱼头','辣子鸡','螺蛳粉','冒菜','串串香','干锅牛蛙','酸辣汤','麻辣拌','川菜'],
+  mild: ['白粥','清汤面','蒸蛋','小馄饨','煲仔饭','广式茶点','云吞面','肠粉','虾饺','叉烧包','糯米鸡','艇仔粥','奶黄包','蛋挞'],
+  soup: ['拉面','馄饨','汤饭','粥品','麻辣烫','牛肉汤','酸辣汤','鸡汤面','排骨汤','老鸭汤','菌菇汤','海鲜粥','疙瘩汤','养生汤'],
+  nosoup: ['炒饭','炒面','煎饼','汉堡','烧烤','盖浇饭','煲仔饭','炸鸡','薯条','寿司','披萨','三明治','沙拉','手抓饼']
 };
 
-function generateRecommendations() {
+function generateRecommendations(exclude, count) {
   var spicy = state.preferences.spicy, soup = state.preferences.soup, taboo = state.preferences.taboo;
   var weather = state.currentWeather;
   var pool = [];
-  var weatherKey = weather === '雨' ? 'rainy' : 'sunny';
+  var weatherKey = 'sunny';
+  if (weather === '雨') weatherKey = 'rainy';
+  else if (weather === '多云') weatherKey = 'cloudy';
+  else if (weather === '阴') weatherKey = 'overcast';
   pool = pool.concat(DISH_DB[weatherKey]);
   var spicyKey = spicy === 'high' ? 'spicy' : 'mild';
   pool = pool.concat(DISH_DB[spicyKey]);
@@ -1727,21 +2331,25 @@ function generateRecommendations() {
 
   if (taboo) { unique = unique.filter(function(d) { return !d.includes(taboo); }); }
 
+  var excludeSet = new Set(exclude || []);
+  unique = unique.filter(function(d) { return !excludeSet.has(d); });
+
   var allDishes = [];
   Object.values(DISH_DB).forEach(function(arr) { allDishes = allDishes.concat(arr); });
   var seen = new Set(unique);
+  excludeSet.forEach(function(d) { seen.add(d); });
   var extras = allDishes.filter(function(d) { return !seen.has(d) && (!taboo || !d.includes(taboo)); });
   for (var i = extras.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
     var tmp = extras[i]; extras[i] = extras[j]; extras[j] = tmp;
   }
   var result = unique.slice();
-  while (result.length < 5 && extras.length > 0) { result.push(extras.pop()); }
+  while (result.length < (count || 5) && extras.length > 0) { result.push(extras.pop()); }
   for (var k = result.length - 1; k > 0; k--) {
     var m = Math.floor(Math.random() * (k + 1));
     var t = result[k]; result[k] = result[m]; result[m] = t;
   }
-  return result.slice(0, 5);
+  return result.slice(0, count || 5);
 }
 
 /* ==================== 第一阶段：孵化 ==================== */
@@ -1760,6 +2368,8 @@ stage1.addEventListener('click', async function() {
   if (stage1Clicked) return;
   stage1Clicked = true;
 
+  try {
+    SoundManager.eggClick();
   eggContainer.classList.add('egg-cracked');
   goldenGlow.classList.add('active');
   spawnEnhancedGoldenParticles();
@@ -1770,11 +2380,15 @@ stage1.addEventListener('click', async function() {
   appWrapper.style.animation = 'hatchShake 0.4s ease-in-out';
   appWrapper.addEventListener('animationend', function() { appWrapper.style.animation = ''; }, { once: true });
 
+  SoundManager.eggCrack();
   eggContainer.classList.add('egg-hatched');
-  await wait(600);
+  await wait(300);
+
+  SoundManager.eggHatch();
+  await wait(300);
 
   eggContainer.style.display = 'none';
-  createYouniSVG('hatchedYouni', { glasses: false, apron: false });
+  createYouniImg('hatchedYouni', '19-hatch-cowering');
   hatchedYouni.classList.add('show');
   await wait(1000);
 
@@ -1782,20 +2396,33 @@ stage1.addEventListener('click', async function() {
   hatchedYouni.classList.add('shrink');
   await wait(500);
 
-  createYouniSVG('hatchedYouni', { glasses: true, glassesAnimate: true, apron: false });
+  createYouniImg('hatchedYouni', '20-hatch-standing-shake');
   await wait(600);
 
-  createYouniSVG('hatchedYouni', { glasses: true, apron: true, apronAnimate: true });
+  createYouniImg('hatchedYouni', '21-hatch-confident-ready');
   await wait(600);
+
+  SoundManager.youniAppear();
+  // 显示酒馆背景
+  stage1.classList.add('hatched-bg');
+  await wait(400);
 
   stage1Bubble.classList.remove('hidden');
+  SoundManager.bubbleShow();
   await typeText(stage1Bubble, '大人好！我是有米，从今天起负责帮您决定吃什么。');
   await wait(500);
 
+  SoundManager.setStage('stage1');
+
   startFirstBtn.classList.remove('hidden');
+  } catch(e) {
+    console.error('Stage1 animation error:', e);
+  }
 });
 
 startFirstBtn.addEventListener('click', function() {
+  SoundManager.buttonClick();
+  SoundManager.stageTransition();
   showStage('stage2');
   initStage2();
 });
@@ -1805,7 +2432,7 @@ function wait(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
 function spawnEnhancedGoldenParticles() {
   var container = goldenParticles;
   var colors = ['#FFD700', '#FFF8F0', '#F5A623', '#FFD700', '#FFF8F0'];
-  var count = 24;
+  var count = 6;
   for (var i = 0; i < count; i++) {
     (function(idx) {
       var isStar = idx % 3 === 0;
@@ -1833,7 +2460,7 @@ function spawnEnhancedGoldenParticles() {
 
 function spawnLightBurst() {
   var container = lightBurst;
-  var count = 12;
+  var count = 4;
   for (var i = 0; i < count; i++) {
     (function(idx) {
       var ray = document.createElement('div');
@@ -1855,20 +2482,24 @@ var stage2Bubble = document.getElementById('stage2Bubble');
 var questionTitle = document.getElementById('questionTitle');
 var questionContent = document.getElementById('questionContent');
 var blackboardContent = document.getElementById('blackboardContent');
+var editPrefBtn = document.getElementById('editPrefBtn');
 var propChili = document.getElementById('propChili');
 var propBowl = document.getElementById('propBowl');
+var editingFromStage3 = false;
 
 function updateBlackboard() {
   var s = state.preferences.spicy !== null ? (state.preferences.spicy === 'high' ? '爱吃辣' : '怕辣') : '待了解';
   var p = state.preferences.soup !== null ? (state.preferences.soup === 'yes' ? '爱喝汤' : '不喝汤') : '待了解';
   var t = state.preferences.taboo || '无';
-  blackboardContent.innerHTML = '辣度：' + s + '<br>汤类：' + p + '<br>忌口：' + t;
+  var st = state.preferences.staple !== null ? (state.preferences.staple === 'rice' ? '米饭' : state.preferences.staple === 'noodle' ? '面食' : '都行') : '待了解';
+  var fl = state.preferences.flavor !== null ? (state.preferences.flavor === 'heavy' ? '重口味' : state.preferences.flavor === 'light' ? '清淡' : '都行') : '待了解';
+  blackboardContent.innerHTML = '辣度：' + s + '<br>汤类：' + p + '<br>主食：' + st + '<br>口味：' + fl + '<br>忌口：' + t;
 }
 
 async function initStage2() {
-  createYouniSVG('youniStage2', { glasses: true, apron: true });
+  createYouniImg('youniStage2', '01-default-stand');
+  startYouniIdle('youniStage2');
   updateBlackboard();
-  initDustParticles('dustContainer2');
   await askQuestion1();
 }
 
@@ -1879,9 +2510,11 @@ async function askQuestion1() {
   questionContent.innerHTML = '<div style="color:#FFF8F0;font-size:14px;margin-bottom:16px;">有米端来一颗辣椒糖...</div><div class="choice-buttons"><button class="choice-btn" id="q1a">咬开它</button><button class="choice-btn" id="q1b">只舔一下</button></div>';
   await typeText(stage2Bubble, '大人，您敢咬开这颗辣椒糖吗？');
   document.getElementById('q1a').addEventListener('click', function() {
+    SoundManager.buttonClick();
     state.preferences.spicy = 'high'; updateBlackboard(); askQuestion2();
   });
   document.getElementById('q1b').addEventListener('click', function() {
+    SoundManager.buttonClick();
     state.preferences.spicy = 'low'; updateBlackboard(); askQuestion2();
   });
 }
@@ -1890,40 +2523,137 @@ async function askQuestion2() {
   propChili.style.display = 'none';
   propBowl.style.display = 'block';
   questionTitle.textContent = '问题二：汤类偏好';
-  questionContent.innerHTML = '<div style="color:#FFF8F0;font-size:14px;margin-bottom:16px;">有米端出一碗热汤...</div><div class="choice-buttons"><button class="choice-btn" id="q2a">会喝完</button><button class="choice-btn" id="q2b">不喝了</button></div>';
+  questionContent.innerHTML = '<div style="color:#FFF8F0;font-size:14px;margin-bottom:16px;">🍜 有米端出一碗热汤...</div><div class="choice-buttons"><button class="choice-btn" id="q2a">会喝完</button><button class="choice-btn" id="q2b">不喝了</button></div>';
   await typeText(stage2Bubble, '大人，店里的汤您会喝完吗？');
   document.getElementById('q2a').addEventListener('click', function() {
-    state.preferences.soup = 'yes'; updateBlackboard(); askQuestion3();
+    SoundManager.buttonClick();
+    state.preferences.soup = 'yes'; updateBlackboard(); askQuestion4();
   });
   document.getElementById('q2b').addEventListener('click', function() {
-    state.preferences.soup = 'no'; updateBlackboard(); askQuestion3();
+    SoundManager.buttonClick();
+    state.preferences.soup = 'no'; updateBlackboard(); askQuestion4();
   });
 }
 
 async function askQuestion3() {
   propBowl.style.display = 'none';
-  questionTitle.textContent = '问题三：忌口';
-  questionContent.innerHTML = '<div style="color:#FFF8F0;font-size:14px;margin-bottom:16px;">有什么是不吃的吗？</div><input type="text" class="taboo-input" id="tabooInput" placeholder="例如：芹菜、香菜"><div style="margin-top:12px;"><button class="skip-btn" id="skipTaboo">跳过</button><button class="choice-btn" id="confirmTaboo" style="margin-left:10px;padding:8px 20px;">确认</button></div>';
+  questionTitle.textContent = '问题五：忌口备注';
+  questionContent.innerHTML = '<div style="color:#FFF8F0;font-size:14px;margin-bottom:16px;">🚫 有什么是不吃的吗？</div><input type="text" class="taboo-input" id="tabooInput" placeholder="例如：芹菜、香菜"><div style="margin-top:12px;"><button class="skip-btn" id="skipTaboo">跳过</button><button class="choice-btn" id="confirmTaboo" style="margin-left:10px;padding:8px 20px;">确认</button></div>';
   await typeText(stage2Bubble, '大人有什么忌口吗？告诉有米，有米会记住的。');
   var input = document.getElementById('tabooInput');
   input.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') { e.preventDefault(); document.getElementById('confirmTaboo').click(); }
   });
-  document.getElementById('skipTaboo').addEventListener('click', function() { finishStage2(); });
+  document.getElementById('skipTaboo').addEventListener('click', function() { SoundManager.buttonClick(); finishStage2(); });
   document.getElementById('confirmTaboo').addEventListener('click', function() {
+    SoundManager.buttonClick();
     state.preferences.taboo = input.value.trim(); updateBlackboard(); finishStage2();
   });
+}
+
+async function askQuestion4() {
+  questionTitle.textContent = '问题三：主食偏好';
+  questionContent.innerHTML = '<div style="color:#FFF8F0;font-size:14px;margin-bottom:16px;">🍚 有米端来一碗米饭和一盘面条...</div><div class="choice-buttons"><button class="choice-btn" id="q4a">米饭为主</button><button class="choice-btn" id="q4b">面食为主</button><button class="choice-btn" id="q4c">都行</button></div>';
+  await typeText(stage2Bubble, '大人平时更爱吃米饭还是面食？');
+  document.getElementById('q4a').addEventListener('click', function() { SoundManager.buttonClick(); state.preferences.staple = 'rice'; updateBlackboard(); askQuestion5(); });
+  document.getElementById('q4b').addEventListener('click', function() { SoundManager.buttonClick(); state.preferences.staple = 'noodle'; updateBlackboard(); askQuestion5(); });
+  document.getElementById('q4c').addEventListener('click', function() { SoundManager.buttonClick(); state.preferences.staple = 'both'; updateBlackboard(); askQuestion5(); });
+}
+
+async function askQuestion5() {
+  questionTitle.textContent = '问题四：口味偏好';
+  questionContent.innerHTML = '<div style="color:#FFF8F0;font-size:14px;margin-bottom:16px;">🧂 有米拿出两份菜单...</div><div class="choice-buttons"><button class="choice-btn" id="q5a">重口味</button><button class="choice-btn" id="q5b">清淡点</button><button class="choice-btn" id="q5c">都行</button></div>';
+  await typeText(stage2Bubble, '大人喜欢重口味还是清淡些？');
+  document.getElementById('q5a').addEventListener('click', function() { SoundManager.buttonClick(); state.preferences.flavor = 'heavy'; updateBlackboard(); askQuestion3(); });
+  document.getElementById('q5b').addEventListener('click', function() { SoundManager.buttonClick(); state.preferences.flavor = 'light'; updateBlackboard(); askQuestion3(); });
+  document.getElementById('q5c').addEventListener('click', function() { SoundManager.buttonClick(); state.preferences.flavor = 'both'; updateBlackboard(); askQuestion3(); });
 }
 
 async function finishStage2() {
   questionContent.innerHTML = '';
   questionTitle.textContent = '';
+  editPrefBtn.classList.remove('hidden');
   await typeText(stage2Bubble, '有米大概了解大人了！我们开始第一次决策吧。');
   await wait(600);
   var btn = document.createElement('button');
   btn.className = 'start-btn'; btn.textContent = '开始第一次决策'; btn.style.marginTop = '20px';
   btn.onclick = function() { saveData(); showStage('stage3'); initStage3(); };
   questionContent.appendChild(btn);
+}
+
+/* ---- 黑板偏好编辑 ---- */
+editPrefBtn.addEventListener('click', function() { enterBlackboardEditMode(false); });
+
+function enterBlackboardEditMode(fromStage3) {
+  editingFromStage3 = fromStage3 || false;
+  editPrefBtn.classList.add('hidden');
+  questionContent.innerHTML = '';
+  questionTitle.textContent = '';
+  propChili.style.display = 'none';
+  propBowl.style.display = 'none';
+  renderBlackboardEditor();
+  typeText(stage2Bubble, '大人想改什么？有米重新记一下～');
+}
+
+function renderBlackboardEditor() {
+  var s = state.preferences.spicy;
+  var p = state.preferences.soup;
+  var s2 = state.preferences.staple;
+  var fl = state.preferences.flavor;
+  var t = (state.preferences.taboo || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  blackboardContent.innerHTML =
+    '<div class="pref-edit-section">' +
+      '<div class="pref-edit-row"><span class="pref-label">辣度</span>' +
+        '<button class="pref-toggle' + (s === 'high' ? ' pref-on' : '') + '" data-pref="spicy" data-val="high">爱吃辣' + (s === 'high' ? ' ✓' : '') + '</button>' +
+        '<button class="pref-toggle' + (s === 'low' ? ' pref-on' : '') + '" data-pref="spicy" data-val="low">怕辣' + (s === 'low' ? ' ✓' : '') + '</button>' +
+      '</div>' +
+      '<div class="pref-edit-row"><span class="pref-label">汤类</span>' +
+        '<button class="pref-toggle' + (p === 'yes' ? ' pref-on' : '') + '" data-pref="soup" data-val="yes">爱喝汤' + (p === 'yes' ? ' ✓' : '') + '</button>' +
+        '<button class="pref-toggle' + (p === 'no' ? ' pref-on' : '') + '" data-pref="soup" data-val="no">不喝汤' + (p === 'no' ? ' ✓' : '') + '</button>' +
+      '</div>' +
+      '<div class="pref-edit-row"><span class="pref-label">主食</span>' +
+        '<button class="pref-toggle' + (s2 === 'rice' ? ' pref-on' : '') + '" data-pref="staple" data-val="rice">米饭为主' + (s2 === 'rice' ? ' ✓' : '') + '</button>' +
+        '<button class="pref-toggle' + (s2 === 'noodle' ? ' pref-on' : '') + '" data-pref="staple" data-val="noodle">面食为主' + (s2 === 'noodle' ? ' ✓' : '') + '</button>' +
+        '<button class="pref-toggle' + (s2 === 'both' ? ' pref-on' : '') + '" data-pref="staple" data-val="both">都行' + (s2 === 'both' ? ' ✓' : '') + '</button>' +
+      '</div>' +
+      '<div class="pref-edit-row"><span class="pref-label">口味</span>' +
+        '<button class="pref-toggle' + (fl === 'heavy' ? ' pref-on' : '') + '" data-pref="flavor" data-val="heavy">重口味' + (fl === 'heavy' ? ' ✓' : '') + '</button>' +
+        '<button class="pref-toggle' + (fl === 'light' ? ' pref-on' : '') + '" data-pref="flavor" data-val="light">清淡点' + (fl === 'light' ? ' ✓' : '') + '</button>' +
+        '<button class="pref-toggle' + (fl === 'both' ? ' pref-on' : '') + '" data-pref="flavor" data-val="both">都行' + (fl === 'both' ? ' ✓' : '') + '</button>' +
+      '</div>' +
+      '<div class="pref-edit-row"><span class="pref-label">忌口</span>' +
+        '<input type="text" id="editTabooInput" class="taboo-input" value="' + t + '" placeholder="如：芹菜">' +
+      '</div>' +
+      '<button class="choice-btn" id="finishEditBtn" style="margin-top:8px;">完成修改</button>' +
+    '</div>';
+  blackboardContent.querySelectorAll('.pref-toggle').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      state.preferences[btn.dataset.pref] = btn.dataset.val;
+      renderBlackboardEditor();
+    });
+  });
+  document.getElementById('finishEditBtn').addEventListener('click', finishEditPref);
+}
+
+function finishEditPref() {
+  var input = document.getElementById('editTabooInput');
+  if (input) state.preferences.taboo = input.value.trim();
+  saveData();
+  updateBlackboard();
+  editPrefBtn.classList.remove('hidden');
+  if (editingFromStage3) {
+    editingFromStage3 = false;
+    transitioning = false;
+    showStage('stage3');
+    initStage3();
+  } else {
+    typeText(stage2Bubble, '改好啦！大人现在可以开始决策了～');
+    questionContent.innerHTML = '';
+    var btn = document.createElement('button');
+    btn.className = 'start-btn'; btn.textContent = '开始第一次决策'; btn.style.marginTop = '20px';
+    btn.onclick = function() { saveData(); showStage('stage3'); initStage3(); };
+    questionContent.appendChild(btn);
+  }
 }
 
 /* ==================== 第三阶段：智能决策 ==================== */
@@ -1934,8 +2664,11 @@ var inputArea = document.getElementById('inputArea');
 var optionsInput = document.getElementById('optionsInput');
 var analyzeBtn = document.getElementById('analyzeBtn');
 var spinBtn = document.getElementById('spinBtn');
+var addMoreBtn = document.getElementById('addMoreBtn');
 var reshuffleBtn = document.getElementById('reshuffleBtn');
 var customPickBtn = document.getElementById('customPickBtn');
+var wheelCounter = document.getElementById('wheelCounter');
+var WHEEL_MAX = 12;
 var analyzingOverlay = document.getElementById('analyzingOverlay');
 var thinkText = document.getElementById('thinkText');
 var receiptOverlay = document.getElementById('receiptOverlay');
@@ -1949,54 +2682,299 @@ var wheelRotation = 0;
 var wheelSpinning = false;
 var WHEEL_COLORS = ['#E88D3C', '#D4A574', '#C49A6C', '#B8956A', '#A88550', '#E0A060', '#D09050', '#C08040'];
 
+function getSectorAtMouse(mouseX, mouseY) {
+  var rect = wheelCanvas.getBoundingClientRect();
+  var cx = rect.width / 2;
+  var cy = rect.height / 2;
+  var scaleX = wheelCanvas.width / rect.width;
+  var scaleY = wheelCanvas.height / rect.height;
+  var x = (mouseX - rect.left) * scaleX - cx;
+  var y = (mouseY - rect.top) * scaleY - cy;
+  var dist = Math.sqrt(x * x + y * y);
+  var radius = Math.min(wheelCanvas.width, wheelCanvas.height) / 2 - 10;
+  if (dist > radius || dist < 20) return -1;
+  var angle = Math.atan2(y, x) - wheelRotation;
+  while (angle < -Math.PI / 2) angle += Math.PI * 2;
+  while (angle > Math.PI * 1.5) angle -= Math.PI * 2;
+  var opts = state.currentOptions;
+  var weights = state.currentWeights;
+  var totalWeight = weights.reduce(function(a, b) { return a + b; }, 0);
+  var startAngle = -Math.PI / 2;
+  for (var i = 0; i < opts.length; i++) {
+    var sliceAngle = (weights[i] / totalWeight) * Math.PI * 2;
+    var endAngle = startAngle + sliceAngle;
+    var normAngle = angle;
+    var normStart = startAngle;
+    var normEnd = endAngle;
+    while (normStart < -Math.PI) { normStart += Math.PI * 2; normEnd += Math.PI * 2; }
+    while (normAngle < normStart) normAngle += Math.PI * 2;
+    if (normAngle >= normStart && normAngle < normEnd) return i;
+    startAngle = endAngle;
+  }
+  return -1;
+}
+
+function initWheelTooltip() {
+  var tooltip = document.getElementById('wheelTooltip');
+  if (!tooltip || tooltip._inited) return;
+  tooltip._inited = true;
+  wheelCanvas.addEventListener('mousemove', function(e) {
+    if (wheelSpinning) { tooltip.classList.remove('show'); return; }
+    var idx = getSectorAtMouse(e.clientX, e.clientY);
+    if (idx >= 0 && state.currentOptions[idx]) {
+      tooltip.textContent = state.currentOptions[idx];
+      var rect = wheelCanvas.getBoundingClientRect();
+      var areaRect = wheelArea.getBoundingClientRect();
+      tooltip.style.left = (e.clientX - areaRect.left + 12) + 'px';
+      tooltip.style.top = (e.clientY - areaRect.top - 30) + 'px';
+      tooltip.classList.add('show');
+    } else {
+      tooltip.classList.remove('show');
+    }
+  });
+  wheelCanvas.addEventListener('mouseleave', function() {
+    tooltip.classList.remove('show');
+  });
+}
+
+function updateWheelCounter() {
+  var count = state.currentOptions.length;
+  wheelCounter.textContent = count + '/' + WHEEL_MAX;
+  if (count >= WHEEL_MAX) {
+    addMoreBtn.disabled = true;
+    addMoreBtn.textContent = '已满';
+  } else {
+    addMoreBtn.disabled = false;
+    addMoreBtn.textContent = '加一批';
+  }
+}
+
+function addMoreRecommendations() {
+  var current = state.currentOptions;
+  if (current.length >= WHEEL_MAX) {
+    typeText(stage3Bubble, '大人，转盘已经装不下了，先转吧！');
+    return;
+  }
+  var need = Math.min(3, WHEEL_MAX - current.length);
+  var newOnes = generateRecommendations(current, need);
+  if (newOnes.length === 0) {
+    typeText(stage3Bubble, '有米已经把所有知道的菜都放上去了！');
+    return;
+  }
+  state.currentOptions = current.concat(newOnes);
+  calculateWeights();
+  drawWheel();
+  playWheelBounce();
+  updateWheelCounter();
+  var names = newOnes.join('、');
+  typeText(stage3Bubble, '有米又想到几个：' + names + '，大人看看！');
+}
+
+var stage3IdleState = { timer: null, blinkTimer: null, listeners: [] };
+
 function initStage3() {
-  createYouniSVG('youniStage3', { glasses: true, apron: true });
-  initDustParticles('dustContainer3');
+  if (stage3IdleState.timer) clearTimeout(stage3IdleState.timer);
+  if (stage3IdleState.blinkTimer) clearInterval(stage3IdleState.blinkTimer);
+  stage3IdleState.listeners.forEach(function(fn) { fn(); });
+  stage3IdleState.listeners = [];
+  createYouniImg('youniStage3', '01-default-stand');
   state.currentWeather = getWeather();
-  weatherBoard.textContent = state.currentWeather + (state.currentWeather === '晴' ? ' 🌞' : ' 🌧️');
+  var weatherEmoji = { '晴': ' 🌞', '雨': ' 🌧️', '多云': ' ⛅', '阴': ' ☁️' };
+  weatherBoard.textContent = state.currentWeather + (weatherEmoji[state.currentWeather] || '');
   var recommendations = generateRecommendations();
   state.currentOptions = recommendations;
   calculateWeights();
   wheelArea.style.display = 'block';
   inputArea.style.display = 'none';
+  wheelCounter.style.display = 'block';
   drawWheel();
+  playWheelBounce();
+  initWheelTooltip();
+  updateWheelCounter();
   spinBtn.style.display = 'inline-block'; spinBtn.disabled = false;
+  addMoreBtn.style.display = 'inline-block';
   reshuffleBtn.style.display = 'inline-block';
   customPickBtn.style.display = 'inline-block';
   spinBtn.onclick = spinWheel;
+  addMoreBtn.onclick = addMoreRecommendations;
+
+  var touchStartX = 0, touchStartY = 0, touchStartTime = 0;
+  wheelCanvas.ontouchstart = function(e) {
+    if (wheelSpinning) return;
+    var touch = e.touches[0];
+    var rect = wheelCanvas.getBoundingClientRect();
+    touchStartX = touch.clientX - rect.left;
+    touchStartY = touch.clientY - rect.top;
+    touchStartTime = Date.now();
+  };
+  wheelCanvas.ontouchend = function(e) {
+    if (wheelSpinning) return;
+    var touch = e.changedTouches[0];
+    var rect = wheelCanvas.getBoundingClientRect();
+    var endX = touch.clientX - rect.left;
+    var endY = touch.clientY - rect.top;
+    var endTime = Date.now();
+    var dx = endX - touchStartX;
+    var dy = endY - touchStartY;
+    var dt = endTime - touchStartTime;
+    if (dt > 50 && dt < 1000) {
+      var distance = Math.sqrt(dx * dx + dy * dy);
+      var speed = distance / dt;
+      if (speed > 0.3 && distance > 30) {
+        spinWheel();
+      }
+    }
+  };
   reshuffleBtn.onclick = function() {
     var recs = generateRecommendations(); state.currentOptions = recs; calculateWeights(); drawWheel();
-    typeText(stage3Bubble, '有米帮大人换了一批推荐，看看有没有喜欢的？');
+    playWheelBounce();
+    updateWheelCounter();
+    typeText(stage3Bubble, pickDialogue('stage3_reshuffle'));
   };
   customPickBtn.onclick = function() {
     wheelArea.style.display = 'none'; inputArea.style.display = 'block';
+    wheelCounter.style.display = 'none';
     optionsInput.value = ''; analyzeBtn.textContent = '让有米分析'; analyzeBtn.disabled = false;
   };
-  typeText(stage3Bubble, '大人，有米根据您的口味推荐了这些，要不要试试？');
+  document.getElementById('editPrefStage3Btn').onclick = function() {
+    showStage('stage2');
+    enterBlackboardEditMode(true);
+  };
+  var timeGreeting = getTimeGreeting();
+  var taboo = state.preferences.taboo;
+  if (timeGreeting && taboo) {
+    typeText(stage3Bubble, timeGreeting + '大人不吃' + taboo + '，有米已经把它拿掉了~');
+  } else if (timeGreeting) {
+    typeText(stage3Bubble, timeGreeting);
+  } else if (taboo) {
+    typeText(stage3Bubble, pickDialogue('stage3_intro') + '对了，大人不吃' + taboo + '，有米记着呢~');
+  } else {
+    typeText(stage3Bubble, pickDialogue('stage3_intro'));
+  }
+
+  stage3IdleState.blinkTimer = startYouniIdle('youniStage3');
+  function resetIdleTimer() {
+    if (stage3IdleState.timer) clearTimeout(stage3IdleState.timer);
+    stage3IdleState.timer = setTimeout(playIdleAction, 10000);
+  }
+  function playIdleAction() {
+    var stage3 = document.getElementById('stage3');
+    if (!stage3 || !stage3.classList.contains('active')) return;
+    if (wheelSpinning) { resetIdleTimer(); return; }
+    var weather = state.currentWeather;
+    var youniEl = document.getElementById('youniStage3');
+    if (!youniEl) return;
+    var actions = ['pocket', 'yawn', 'look'];
+    var action = actions[Math.floor(Math.random() * actions.length)];
+    if (action === 'pocket') {
+      setYouniPose('youniStage3', '09-tea-time');
+      setTimeout(function() { typeText(stage3Bubble, '嗯？有米在掏围裙口袋...什么都没找到。'); }, 800);
+      setTimeout(function() {
+        setYouniPose('youniStage3', '01-default-stand');
+        resetIdleTimer();
+      }, 2500);
+    } else if (action === 'yawn') {
+      setYouniPose('youniStage3', '04-sleepy');
+      SoundManager.yawning();
+      setTimeout(function() { typeText(stage3Bubble, '哈欠~ 大人还在吗？有米稍微眯了一下...'); }, 800);
+      setTimeout(function() {
+        setYouniPose('youniStage3', '01-default-stand');
+        resetIdleTimer();
+      }, 2500);
+    } else {
+      setYouniPose('youniStage3', '12-notice-curious');
+      var weatherDialogues = {
+        '晴': '今天天气真好呢~',
+        '雨': '下雨了呢，大人带伞了吗？',
+        '多云': '多云的天气，好舒服~'
+      };
+      setTimeout(function() {
+        typeText(stage3Bubble, weatherDialogues[weather] || '外面好像阴天呢...');
+      }, 1500);
+      setTimeout(function() {
+        setYouniPose('youniStage3', '01-default-stand');
+        resetIdleTimer();
+      }, 3500);
+    }
+  }
+  var idleEvents = ['click', 'touchstart', 'keydown', 'mousemove'];
+  function onUserActivity() {
+    setYouniPose('youniStage3', '01-default-stand');
+    resetIdleTimer();
+  }
+  idleEvents.forEach(function(ev) {
+    var target = document.getElementById('stage3');
+    target.addEventListener(ev, onUserActivity);
+    stage3IdleState.listeners.push(function() {
+      target.removeEventListener(ev, onUserActivity);
+    });
+  });
+  resetIdleTimer();
 }
+
+document.addEventListener('keydown', function(e) {
+  var stage1 = document.getElementById('stage1');
+  var stage3 = document.getElementById('stage3');
+
+  if (stage1 && stage1.classList.contains('active')) {
+    if (e.code === 'Space' || e.key === ' ') {
+      e.preventDefault();
+      stage1.click();
+    }
+    return;
+  }
+
+  if (!stage3 || !stage3.classList.contains('active')) return;
+  if (wheelSpinning) return;
+  if (e.code === 'Space' || e.key === ' ') {
+    e.preventDefault();
+    SoundManager.keyboard();
+    spinWheel();
+  } else if (e.key === 'r' || e.key === 'R') {
+    e.preventDefault();
+    SoundManager.keyboard();
+    reshuffleBtn.click();
+  }
+});
 
 async function onAnalyzeClick() {
   var raw = optionsInput.value.trim();
   if (!raw) return;
   var options = raw.split(/[,，、\s]+/).map(function(s) { return s.trim(); }).filter(function(s) { return s; });
-  if (options.length < 2) { typeText(stage3Bubble, '大人至少给有米两个选项嘛...'); return; }
-  state.currentOptions = options;
+  var isAppend = analyzeBtn.textContent === '追加';
+  var existing = isAppend ? state.currentOptions : [];
+  var combined = existing.concat(options);
+  var uniqueCombined = [];
+  var seen = new Set();
+  combined.forEach(function(d) { if (!seen.has(d)) { seen.add(d); uniqueCombined.push(d); } });
+  if (uniqueCombined.length < 2) { typeText(stage3Bubble, '大人至少给有米两个选项嘛...'); return; }
+  if (uniqueCombined.length > WHEEL_MAX) { typeText(stage3Bubble, '大人，转盘最多装' + WHEEL_MAX + '个选项哦！'); return; }
+  state.currentOptions = uniqueCombined;
   analyzeBtn.disabled = true;
   var youniEl = document.getElementById('youniStage3');
   analyzingOverlay.classList.add('show');
-  youniEl.classList.add('youni-thinking');
+  setYouniPose('youniStage3', '03-thinking');
   await wait(800);
   thinkText.textContent = '有米在托下巴思考...';
   await wait(800);
   thinkText.textContent = '有米在算权重...';
   await wait(600);
   analyzingOverlay.classList.remove('show');
-  youniEl.classList.remove('youni-thinking');
+  setYouniPose('youniStage3', '01-default-stand');
   calculateWeights();
-  inputArea.style.display = 'none'; wheelArea.style.display = 'block'; drawWheel();
+  inputArea.style.display = 'none'; wheelArea.style.display = 'block'; wheelCounter.style.display = 'block'; drawWheel();
+  updateWheelCounter();
   var explain = generateExplanation();
   await typeText(stage3Bubble, explain);
   spinBtn.style.display = 'inline-block'; spinBtn.disabled = false;
+  addMoreBtn.style.display = 'inline-block';
+  addMoreBtn.textContent = '再加几个';
+  addMoreBtn.onclick = function() {
+    wheelArea.style.display = 'none'; inputArea.style.display = 'block'; wheelCounter.style.display = 'none';
+    optionsInput.value = ''; optionsInput.placeholder = '输入要追加的选项，如：粥品、烧烤';
+    analyzeBtn.textContent = '追加';
+    analyzeBtn.disabled = false;
+  };
   reshuffleBtn.style.display = 'none'; customPickBtn.style.display = 'none';
   spinBtn.onclick = spinWheel;
 }
@@ -2005,24 +2983,96 @@ analyzeBtn.addEventListener('click', onAnalyzeClick);
 optionsInput.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') { e.preventDefault(); onAnalyzeClick(); }
 });
+document.getElementById('backToRecommendBtn').addEventListener('click', function() {
+  inputArea.style.display = 'none';
+  wheelArea.style.display = 'block';
+  wheelCounter.style.display = 'block';
+  var recs = generateRecommendations();
+  state.currentOptions = recs;
+  calculateWeights();
+  drawWheel();
+  updateWheelCounter();
+  optionsInput.placeholder = '输入选项，如：麻辣烫、寿司、沙拉';
+  analyzeBtn.textContent = '让有米分析';
+  spinBtn.style.display = 'inline-block'; spinBtn.disabled = false;
+  addMoreBtn.style.display = 'inline-block'; addMoreBtn.textContent = '加一批'; addMoreBtn.onclick = addMoreRecommendations;
+  reshuffleBtn.style.display = 'inline-block';
+  customPickBtn.style.display = 'inline-block';
+  spinBtn.onclick = spinWheel;
+  typeText(stage3Bubble, '好嘞~ 有米继续为大人推荐！');
+});
+
+function getDishHistoryScore(dishName) {
+  var score = 0;
+  var count = 0;
+  state.history.forEach(function(entry) {
+    if (entry.result === dishName) {
+      if (entry.rating === 'good') score += 1.0;
+      else if (entry.rating === 'ok') score += 0.2;
+      else if (entry.rating === 'bad') score -= 0.8;
+      count++;
+    }
+  });
+  if (count === 0) return 0;
+  var avg = score / count;
+  var confidence = Math.min(count / 3, 1);
+  return avg * confidence;
+}
+
+function getBadReasonAdjustments() {
+  var adjustments = { spicy: 0, bland: 0, soup: 0, quality: 0 };
+  state.history.forEach(function(entry) {
+    if (entry.rating === 'bad' && entry.reason) {
+      if (entry.reason === 'too_spicy') adjustments.spicy -= 0.15;
+      if (entry.reason === 'too_bland') adjustments.bland -= 0.1;
+      if (entry.reason === 'not_tasty') adjustments.spicy -= 0.05;
+    }
+    if (entry.rating === 'good') {
+      if (entry.result.includes('辣') || entry.result.includes('火锅') || entry.result.includes('麻辣')) adjustments.spicy += 0.08;
+      if (entry.result.includes('汤') || entry.result.includes('面')) adjustments.soup += 0.05;
+    }
+  });
+  return adjustments;
+}
 
 function calculateWeights() {
   var opts = state.currentOptions;
+  var badAdj = getBadReasonAdjustments();
   var weights = opts.map(function(opt, i) {
     var w = 1.0;
     w += (opts.length - i) * 0.15;
     if (state.currentWeather === '雨') {
-      if (opt.includes('汤') || opt.includes('火锅') || opt.includes('面')) w += 0.4;
-      if (opt.includes('冰') || opt.includes('凉') || opt.includes('沙拉')) w -= 0.3;
-    } else {
-      if (opt.includes('凉') || opt.includes('冰') || opt.includes('沙拉')) w += 0.3;
+      if (opt.includes('汤') || opt.includes('火锅') || opt.includes('面') || opt.includes('馄饨') || opt.includes('关东煮')) w += 0.4;
+      if (opt.includes('冰') || opt.includes('凉') || opt.includes('沙拉') || opt.includes('冷')) w -= 0.3;
+    } else if (state.currentWeather === '晴') {
+      if (opt.includes('凉') || opt.includes('冰') || opt.includes('沙拉') || opt.includes('冷')) w += 0.3;
+    } else if (state.currentWeather === '阴' || state.currentWeather === '多云') {
+      if (opt.includes('面') || opt.includes('饭')) w += 0.15;
     }
-    if (state.preferences.spicy === 'high' && (opt.includes('辣') || opt.includes('火锅') || opt.includes('麻辣烫'))) w += 0.5;
-    if (state.preferences.spicy === 'low' && (opt.includes('辣') || opt.includes('火锅'))) w -= 0.4;
-    if (state.preferences.soup === 'yes' && (opt.includes('汤') || opt.includes('面') || opt.includes('粥'))) w += 0.3;
+    var isSpicy = opt.includes('辣') || opt.includes('火锅') || opt.includes('麻辣烫') || opt.includes('麻辣');
+    if (state.preferences.spicy === 'high' && isSpicy) w += 0.5;
+    if (state.preferences.spicy === 'low' && isSpicy) w -= 0.4;
+    if (badAdj.spicy !== 0 && isSpicy) w += badAdj.spicy;
+    var isSoup = opt.includes('汤') || opt.includes('面') || opt.includes('粥') || opt.includes('馄饨');
+    if (state.preferences.soup === 'yes' && isSoup) w += 0.3;
     if (state.preferences.soup === 'no' && opt.includes('汤')) w -= 0.2;
-    if (state.preferences.taboo && opt.includes(state.preferences.taboo)) w = 0.1;
-    return Math.max(0.1, w);
+    if (badAdj.soup !== 0 && isSoup) w += badAdj.soup;
+    var isRice = opt.includes('饭') || opt.includes('炒饭') || opt.includes('拌饭') || opt.includes('丼');
+    var isNoodle = opt.includes('面') || opt.includes('粉') || opt.includes('河粉');
+    if (state.preferences.staple === 'rice' && isRice) w += 0.2;
+    if (state.preferences.staple === 'rice' && isNoodle) w -= 0.1;
+    if (state.preferences.staple === 'noodle' && isNoodle) w += 0.2;
+    if (state.preferences.staple === 'noodle' && isRice) w -= 0.1;
+    var isHeavy = opt.includes('麻辣') || opt.includes('火锅') || opt.includes('烤') || opt.includes('炸') || opt.includes('红烧') || opt.includes('辣');
+    var isLight = opt.includes('清蒸') || opt.includes('白灼') || opt.includes('凉拌') || opt.includes('粥') || opt.includes('清');
+    if (state.preferences.flavor === 'heavy' && isHeavy) w += 0.2;
+    if (state.preferences.flavor === 'light' && isLight) w += 0.2;
+    if (state.preferences.taboo && opt.includes(state.preferences.taboo)) w = 0.05;
+    var historyScore = getDishHistoryScore(opt);
+    if (historyScore !== 0) {
+      w += historyScore * 0.6;
+    }
+    return Math.max(0.05, w);
   });
   state.currentWeights = weights;
 }
@@ -2034,9 +3084,15 @@ function generateExplanation() {
   var reasons = [];
   if (maxIdx === 0) reasons.push('第一个选项通常是大人心里的首选');
   if (state.currentWeather === '雨') reasons.push('今天下雨，有米觉得热乎的更好');
-  else reasons.push('今天天气不错');
+  else if (state.currentWeather === '晴') reasons.push('今天天气不错');
+  else reasons.push('今天天气阴沉沉的');
   if (state.preferences.spicy === 'high') reasons.push('大人爱吃辣');
   if (state.preferences.soup === 'yes') reasons.push('大人爱喝汤');
+  var historyScore = getDishHistoryScore(maxOpt);
+  if (historyScore > 0.3) reasons.push('大人之前说过这个好吃');
+  else if (historyScore < -0.3) reasons.push('虽然之前踩过雷，但偶尔换换口味也不错');
+  var badAdj = getBadReasonAdjustments();
+  if (badAdj.spicy < -0.2) reasons.push('有米记得大人说过太辣了');
   return '「' + maxOpt + '」扇区最大，因为' + reasons[0] + '。';
 }
 
@@ -2048,54 +3104,28 @@ function getContrastColor(hexColor) {
   return brightness > 150 ? '#2C1810' : '#FFF8F0';
 }
 
-function drawWheel() {
-  var ctx = wheelCanvas.getContext('2d');
-  var w = wheelCanvas.width, h = wheelCanvas.height;
-  var cx = w / 2, cy = h / 2;
-  var radius = Math.min(w, h) / 2 - 10;
-  var opts = state.currentOptions;
-  var weights = state.currentWeights;
+function getWheelFontSize(opts, weights, radius) {
+  var count = opts.length;
+  var maxLen = 0;
+  opts.forEach(function(o) { if (o.length > maxLen) maxLen = o.length; });
   var totalWeight = weights.reduce(function(a, b) { return a + b; }, 0);
-  ctx.clearRect(0, 0, w, h); ctx.save();
-  ctx.beginPath(); ctx.arc(cx, cy, radius + 6, 0, Math.PI * 2);
-  ctx.fillStyle = '#8B4513'; ctx.fill();
-  for (var ti = 0; ti < 20; ti++) {
-    var ta = (Math.PI * 2 * ti) / 20;
-    ctx.beginPath();
-    ctx.moveTo(cx + Math.cos(ta) * (radius + 2), cy + Math.sin(ta) * (radius + 2));
-    ctx.lineTo(cx + Math.cos(ta) * (radius + 5), cy + Math.sin(ta) * (radius + 5));
-    ctx.strokeStyle = '#A0522D'; ctx.lineWidth = 1.5; ctx.stroke();
-  }
-  var startAngle = -Math.PI / 2;
-  opts.forEach(function(opt, i) {
-    var sliceAngle = (weights[i] / totalWeight) * Math.PI * 2;
-    var endAngle = startAngle + sliceAngle;
-    ctx.beginPath(); ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, radius, startAngle, endAngle); ctx.closePath();
-    ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length]; ctx.fill();
-    ctx.strokeStyle = '#FFF8F0'; ctx.lineWidth = 2; ctx.stroke();
-    var midAngle = startAngle + sliceAngle / 2;
-    var textR = radius * 0.65;
-    var tx = cx + Math.cos(midAngle) * textR;
-    var ty = cy + Math.sin(midAngle) * textR;
-    ctx.save(); ctx.translate(tx, ty); ctx.rotate(midAngle + Math.PI / 2);
-    ctx.fillStyle = getContrastColor(WHEEL_COLORS[i % WHEEL_COLORS.length]);
-    ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    var display = opt;
-    var angleDeg = (sliceAngle / Math.PI) * 180;
-    if (angleDeg >= 60) { if (display.length > 6) display = display.slice(0, 5) + '...'; }
-    else { if (display.length > 3) display = display.slice(0, 3) + '...'; }
-    ctx.fillText(display, 0, 0); ctx.restore();
-    startAngle = endAngle;
+  var minSliceAngle = Math.PI * 2;
+  weights.forEach(function(w) {
+    var a = (w / totalWeight) * Math.PI * 2;
+    if (a < minSliceAngle) minSliceAngle = a;
   });
-  ctx.beginPath(); ctx.arc(cx, cy, 18, 0, Math.PI * 2);
-  ctx.fillStyle = '#FFF8F0'; ctx.fill(); ctx.strokeStyle = '#8B4513'; ctx.lineWidth = 3; ctx.stroke();
-  ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2);
-  ctx.fillStyle = '#F5A623'; ctx.fill();
-  ctx.restore();
+  var minSliceDeg = (minSliceAngle / Math.PI) * 180;
+  var size = 12;
+  if (count > 10) size = 9;
+  else if (count > 8) size = 10;
+  else if (count > 6) size = 11;
+  if (maxLen > 5 && minSliceDeg < 30) size = Math.max(8, size - 1);
+  if (maxLen > 7 && count > 8) size = Math.max(8, size - 1);
+  return size;
 }
 
-function highlightWheelSector(winnerIdx) {
+function drawWheel(highlightIdx) {
+  if (highlightIdx === undefined) highlightIdx = -1;
   var ctx = wheelCanvas.getContext('2d');
   var w = wheelCanvas.width, h = wheelCanvas.height;
   var cx = w / 2, cy = h / 2;
@@ -2103,8 +3133,12 @@ function highlightWheelSector(winnerIdx) {
   var opts = state.currentOptions;
   var weights = state.currentWeights;
   var totalWeight = weights.reduce(function(a, b) { return a + b; }, 0);
+  var fontSize = getWheelFontSize(opts, weights, radius);
+  var lineGap = fontSize * 0.7;
   ctx.clearRect(0, 0, w, h); ctx.save();
-  ctx.translate(cx, cy); ctx.rotate(wheelRotation); ctx.translate(-cx, -cy);
+  if (highlightIdx >= 0) {
+    ctx.translate(cx, cy); ctx.rotate(wheelRotation); ctx.translate(-cx, -cy);
+  }
   ctx.beginPath(); ctx.arc(cx, cy, radius + 6, 0, Math.PI * 2);
   ctx.fillStyle = '#8B4513'; ctx.fill();
   for (var ti = 0; ti < 20; ti++) {
@@ -2120,13 +3154,14 @@ function highlightWheelSector(winnerIdx) {
     var endAngle = startAngle + sliceAngle;
     ctx.beginPath(); ctx.moveTo(cx, cy);
     ctx.arc(cx, cy, radius, startAngle, endAngle); ctx.closePath();
-    if (i === winnerIdx) {
+    var isHighlight = (i === highlightIdx);
+    if (isHighlight) {
       ctx.fillStyle = '#FFD700'; ctx.shadowColor = 'rgba(255,215,0,0.6)'; ctx.shadowBlur = 20;
     } else {
       ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length]; ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
     }
     ctx.fill(); ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
-    if (i === winnerIdx) { ctx.strokeStyle = '#F5A623'; ctx.lineWidth = 4; }
+    if (isHighlight) { ctx.strokeStyle = '#F5A623'; ctx.lineWidth = 4; }
     else { ctx.strokeStyle = '#FFF8F0'; ctx.lineWidth = 2; }
     ctx.stroke();
     var midAngle = startAngle + sliceAngle / 2;
@@ -2134,14 +3169,23 @@ function highlightWheelSector(winnerIdx) {
     var tx = cx + Math.cos(midAngle) * textR;
     var ty = cy + Math.sin(midAngle) * textR;
     ctx.save(); ctx.translate(tx, ty); ctx.rotate(midAngle + Math.PI / 2);
-    var bgColor = i === winnerIdx ? '#FFD700' : WHEEL_COLORS[i % WHEEL_COLORS.length];
+    var bgColor = isHighlight ? '#FFD700' : WHEEL_COLORS[i % WHEEL_COLORS.length];
     ctx.fillStyle = getContrastColor(bgColor);
-    ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = 'bold ' + fontSize + 'px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     var display = opt;
     var angleDeg = (sliceAngle / Math.PI) * 180;
-    if (angleDeg >= 60) { if (display.length > 6) display = display.slice(0, 5) + '...'; }
-    else { if (display.length > 3) display = display.slice(0, 3) + '...'; }
-    ctx.fillText(display, 0, 0); ctx.restore();
+    if (display.length > 5 && angleDeg < 45) {
+      var mid = Math.ceil(display.length / 2);
+      ctx.fillText(display.slice(0, mid), 0, -lineGap);
+      ctx.fillText(display.slice(mid), 0, lineGap);
+    } else if (display.length > 7) {
+      var mid = Math.ceil(display.length / 2);
+      ctx.fillText(display.slice(0, mid), 0, -lineGap);
+      ctx.fillText(display.slice(mid), 0, lineGap);
+    } else {
+      ctx.fillText(display, 0, 0);
+    }
+    ctx.restore();
     startAngle = endAngle;
   });
   ctx.beginPath(); ctx.arc(cx, cy, 18, 0, Math.PI * 2);
@@ -2149,12 +3193,34 @@ function highlightWheelSector(winnerIdx) {
   ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2);
   ctx.fillStyle = '#F5A623'; ctx.fill();
   ctx.restore();
+}
+
+function playWheelBounce() {
+  wheelCanvas.classList.remove('wheel-bounce-in');
+  void wheelCanvas.offsetWidth;
+  wheelCanvas.classList.add('wheel-bounce-in');
+}
+
+function highlightWheelSector(winnerIdx) {
+  drawWheel(winnerIdx);
   wheelPulse.classList.add('active');
 }
 
 function spinWheel() {
   if (wheelSpinning) return;
+  var now = Date.now();
+  state.spinTimestamps = state.spinTimestamps.filter(function(t) { return now - t < 5 * 60 * 1000; });
+  var isSpinningTooFast = state.spinTimestamps.length >= 3;
+  state.spinTimestamps.push(now);
   wheelSpinning = true; spinBtn.disabled = true; wheelPulse.classList.remove('active');
+  SoundManager.wheelStart();
+  var youniEl = document.getElementById('youniStage3');
+  setYouniPose('youniStage3', '14-expecting-anticipation');
+  if (isSpinningTooFast) {
+    typeText(stage3Bubble, '大人转得太快啦，有米都晕了~ 要不先尝尝这个？');
+  } else {
+    typeText(stage3Bubble, '转转转~有米好期待呀！');
+  }
   var opts = state.currentOptions;
   var weights = state.currentWeights;
   var totalWeight = weights.reduce(function(a, b) { return a + b; }, 0);
@@ -2175,16 +3241,54 @@ function spinWheel() {
   var duration = 3000;
   var startTime = performance.now();
   var startRot = wheelRotation;
+  var radius = Math.min(wheelCanvas.width, wheelCanvas.height) / 2 - 10;
+  var spinFontSize = getWheelFontSize(opts, weights, radius);
+  var lineGap = spinFontSize * 0.7;
+  var lastSectorIdx = Math.floor(((wheelRotation + Math.PI / 2) % (Math.PI * 2)) / (Math.PI * 2 / opts.length));
 
+  function elasticOut(t) {
+    var p = 0.3;
+    return Math.pow(2, -10 * t) * Math.sin((t - p / 4) * (2 * Math.PI) / p) + 1;
+  }
+  var lastPose = '14-expecting-anticipation';
   function animate(now) {
     var elapsed = now - startTime;
     var t = Math.min(elapsed / duration, 1);
-    var ease = 1 - Math.pow(1 - t, 3);
+    var ease = elasticOut(t);
     wheelRotation = startRot + delta * ease;
+    var speed = (delta * 3 * Math.pow(1 - t, 2)) / duration * 1000;
+    var speedRatio = Math.min(1, speed / 10);
+
+    if (t < 0.4) {
+      if (lastPose !== '14-expecting-anticipation') {
+        setYouniPose('youniStage3', '14-expecting-anticipation');
+        lastPose = '14-expecting-anticipation';
+      }
+    } else if (t < 0.75) {
+      if (lastPose !== '24-wheel-tense') {
+        setYouniPose('youniStage3', '24-wheel-tense');
+        lastPose = '24-wheel-tense';
+      }
+    } else if (t < 1) {
+      if (lastPose !== '05-surprised') {
+        setYouniPose('youniStage3', '05-surprised');
+        lastPose = '05-surprised';
+      }
+    }
+
+    var normalizedAngle = (wheelRotation + Math.PI / 2) % (Math.PI * 2);
+    if (normalizedAngle < 0) normalizedAngle += Math.PI * 2;
+    var currentSector = Math.floor(normalizedAngle / (Math.PI * 2 / opts.length));
+    if (currentSector !== lastSectorIdx) {
+      if (speedRatio > 0.15) {
+        var panVal = Math.sin(wheelRotation);
+        SoundManager.wheelTick(panVal, speedRatio * 0.7);
+      }
+      lastSectorIdx = currentSector;
+    }
     var ctx = wheelCanvas.getContext('2d');
     var w = wheelCanvas.width, h = wheelCanvas.height;
     var cx = w / 2, cy = h / 2;
-    var radius = Math.min(w, h) / 2 - 10;
     ctx.clearRect(0, 0, w, h); ctx.save();
     ctx.translate(cx, cy); ctx.rotate(wheelRotation); ctx.translate(-cx, -cy);
     ctx.beginPath(); ctx.arc(cx, cy, radius + 6, 0, Math.PI * 2);
@@ -2210,12 +3314,21 @@ function spinWheel() {
       var ty = cy + Math.sin(midAngle) * textR;
       ctx.save(); ctx.translate(tx, ty); ctx.rotate(midAngle + Math.PI / 2);
       ctx.fillStyle = getContrastColor(WHEEL_COLORS[i % WHEEL_COLORS.length]);
-      ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = 'bold ' + spinFontSize + 'px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       var display = opt;
       var angleDeg = (sliceAngle / Math.PI) * 180;
-      if (angleDeg >= 60) { if (display.length > 6) display = display.slice(0, 5) + '...'; }
-      else { if (display.length > 3) display = display.slice(0, 3) + '...'; }
-      ctx.fillText(display, 0, 0); ctx.restore();
+      if (display.length > 5 && angleDeg < 45) {
+        var mid = Math.ceil(display.length / 2);
+        ctx.fillText(display.slice(0, mid), 0, -lineGap);
+        ctx.fillText(display.slice(mid), 0, lineGap);
+      } else if (display.length > 7) {
+        var mid = Math.ceil(display.length / 2);
+        ctx.fillText(display.slice(0, mid), 0, -lineGap);
+        ctx.fillText(display.slice(mid), 0, lineGap);
+      } else {
+        ctx.fillText(display, 0, 0);
+      }
+      ctx.restore();
       sa = ea;
     });
     ctx.beginPath(); ctx.arc(cx, cy, 18, 0, Math.PI * 2);
@@ -2226,6 +3339,7 @@ function spinWheel() {
     if (t < 1) { requestAnimationFrame(animate); }
     else {
       wheelSpinning = false;
+      SoundManager.wheelStop();
       var actualWinnerIdx = getActualWinnerIdx();
       highlightWheelSector(actualWinnerIdx);
       showResult(opts[actualWinnerIdx], actualWinnerIdx);
@@ -2256,15 +3370,32 @@ function getActualWinnerIdx() {
 
 async function showResult(result, idx) {
   state.currentResult = result;
+  if (navigator.vibrate) {
+    navigator.vibrate(50);
+  }
   await wait(400);
   var youni = document.getElementById('youniStage3');
-  if (idx === 0) {
-    youni.classList.add('youni-excited');
-    createStars(youni);
+  var weights = state.currentWeights;
+  var totalWeight = weights.reduce(function(a, b) { return a + b; }, 0);
+  var weightRatio = weights[idx] / totalWeight;
+  var avgRatio = 1 / weights.length;
+  if (weightRatio > avgRatio * 1.5) {
+    setYouniPose('youniStage3', '02-happy-stars');
+    createStars(youni, 8);
     createWarmFlash('stage3');
-    await typeText(stage3Bubble, '哇！转到了「' + result + '」！大人眼光真好！');
+    await typeText(stage3Bubble, pickDialogue('stage3_spin_first', { result: result }));
+  } else if (weightRatio > avgRatio * 1.2) {
+    setYouniPose('youniStage3', '15-recommend-proud');
+    await typeText(stage3Bubble, pickDialogue('stage3_spin_first', { result: result }));
+  } else if (weightRatio < avgRatio * 0.6) {
+    setYouniPose('youniStage3', '06-sad');
+    await typeText(stage3Bubble, '呜...转到这个了，有米再帮大人看看？');
+  } else if (weightRatio < avgRatio * 0.85) {
+    setYouniPose('youniStage3', '03-thinking');
+    await typeText(stage3Bubble, '嗯...这个也不错呢，大人觉得怎么样？');
   } else {
-    await typeText(stage3Bubble, '转盘停在了「' + result + '」，这是有米为大人选的！');
+    setYouniPose('youniStage3', '01-default-stand');
+    await typeText(stage3Bubble, pickDialogue('stage3_spin_other', { result: result }));
   }
   await wait(500);
   receiptResult.textContent = result;
@@ -2281,23 +3412,25 @@ document.getElementById('receiptClose').addEventListener('click', function() {
   receiptOverlay.classList.remove('show');
   wheelPulse.classList.remove('active');
   var youni = document.getElementById('youniStage3');
-  youni.classList.remove('youni-excited');
+  setYouniPose('youniStage3', '01-default-stand');
   stage4Init();
 });
 
 /* ==================== 第四阶段：反馈 ==================== */
 function stage4Init() {
   showStage('stage4');
-  createYouniSVG('youniStage4', { glasses: true, apron: true });
-  initDustParticles('dustContainer4');
+  createYouniImg('youniStage4', '01-default-stand');
+  startYouniIdle('youniStage4');
   var feedbackTitle = document.getElementById('feedbackTitle');
   var feedbackBtns = document.getElementById('feedbackBtns');
+  var skipFeedbackBtn = document.getElementById('skipFeedbackBtn');
   var attributionBox = document.getElementById('attributionBox');
   var goToBookBtn = document.getElementById('goToBookBtn');
   var stage4Bubble = document.getElementById('stage4Bubble');
   var youni = document.getElementById('youniStage4');
   feedbackTitle.textContent = '吃完记得回来告诉有米哦~';
   feedbackBtns.style.display = 'none';
+  skipFeedbackBtn.style.display = 'none';
   attributionBox.classList.remove('show');
   goToBookBtn.classList.add('hidden');
   removeSadOverlay();
@@ -2308,61 +3441,44 @@ function stage4Init() {
   returnBtn.className = 'return-btn'; returnBtn.id = 'simulateReturn';
   returnBtn.textContent = '模拟吃完回来';
   returnBtn.onclick = function() {
+    SoundManager.buttonClick();
     returnBtn.remove();
     feedbackTitle.textContent = '这顿吃得怎么样？';
     feedbackBtns.style.display = 'flex';
+    skipFeedbackBtn.style.display = 'inline-block';
     typeText(stage4Bubble, '大人，这顿吃得怎么样？');
   };
   document.getElementById('feedbackArea').insertBefore(returnBtn, feedbackTitle.nextSibling);
 
   document.querySelectorAll('.feedback-btn').forEach(function(btn) {
     btn.onclick = async function() {
+      SoundManager.buttonClick();
       var rating = btn.dataset.rating;
       feedbackBtns.style.display = 'none';
       if (rating === 'good') {
-        youni.classList.add('youni-happy');
-        createStars(youni, 12);
+        SoundManager.happy();
+        setYouniPose('youniStage4', '02-happy-stars');
+        createStars(youni, 6);
         createWarmFlash('stage4');
-        await typeText(stage4Bubble, '太好啦！有米好开心！大人喜欢就好！');
+        await typeText(stage4Bubble, pickDialogue('stage4_good'));
         await wait(500);
         saveHistory('good');
         state.unlocked = Math.max(state.unlocked, 1);
         saveData();
         goToBookBtn.classList.remove('hidden');
       } else if (rating === 'ok') {
-        await typeText(stage4Bubble, '嗯...一般般呀，有米下次会努力推荐更好的！');
+        SoundManager.success();
+        await typeText(stage4Bubble, pickDialogue('stage4_ok'));
         await wait(500);
         saveHistory('ok');
         state.unlocked = Math.max(state.unlocked, 1);
         saveData();
         goToBookBtn.classList.remove('hidden');
       } else {
-        youni.classList.add('youni-sad');
+        SoundManager.error();
+        setYouniPose('youniStage4', '06-sad');
         createSadOverlay('stage4');
-        var svgNS = 'http://www.w3.org/2000/svg';
-        var svgEl = youni.querySelector('svg');
-        if (svgEl) {
-          var tearG = document.createElementNS(svgNS, 'g');
-          tearG.setAttribute('class', 'youni-tears');
-          var tL = document.createElementNS(svgNS, 'ellipse');
-          tL.setAttribute('cx', '35'); tL.setAttribute('cy', '42');
-          tL.setAttribute('rx', '3'); tL.setAttribute('ry', '4');
-          tL.setAttribute('fill', '#87CEEB');
-          tL.style.animation = 'tearDrop 1.2s ease-in forwards';
-          var tR = document.createElementNS(svgNS, 'ellipse');
-          tR.setAttribute('cx', '65'); tR.setAttribute('cy', '42');
-          tR.setAttribute('rx', '3'); tR.setAttribute('ry', '4');
-          tR.setAttribute('fill', '#87CEEB');
-          tR.style.animation = 'tearDrop 1.2s ease-in 0.2s forwards';
-          tearG.appendChild(tL); tearG.appendChild(tR);
-          svgEl.appendChild(tearG);
-          setTimeout(function() { tearG.remove(); }, 2000);
-        }
-        var hanky = document.createElement('div');
-        hanky.className = 'handkerchief';
-        youni.appendChild(hanky);
-        setTimeout(function() { hanky.remove(); }, 4000);
-        await typeText(stage4Bubble, '呜...有米搞砸了，大人对不起...');
+        await typeText(stage4Bubble, pickDialogue('stage4_bad'));
         await wait(300);
         attributionBox.classList.add('show');
       }
@@ -2372,6 +3488,7 @@ function stage4Init() {
   var selectedReason = '';
   document.querySelectorAll('.att-tag').forEach(function(tag) {
     tag.onclick = function() {
+      SoundManager.buttonClick();
       document.querySelectorAll('.att-tag').forEach(function(t) { t.classList.remove('selected'); });
       tag.classList.add('selected');
       selectedReason = tag.dataset.reason;
@@ -2379,22 +3496,36 @@ function stage4Init() {
   });
 
   document.getElementById('confirmBadBtn').onclick = async function() {
+    SoundManager.buttonClick();
     saveHistory('bad', selectedReason);
     state.unlocked = Math.max(state.unlocked, 1);
     saveData();
     attributionBox.classList.remove('show');
     removeSadOverlay();
     var youni2 = document.getElementById('youniStage4');
-    youni2.classList.remove('youni-sad');
-    await typeText(stage4Bubble, '有米记住了，下次一定会更努力！');
+    setYouniPose('youniStage4', '01-default-stand');
+    await typeText(stage4Bubble, pickDialogue('stage4_bad_after'));
     await wait(400);
     goToBookBtn.classList.remove('hidden');
   };
 
+  skipFeedbackBtn.onclick = async function() {
+    SoundManager.buttonClick();
+    feedbackBtns.style.display = 'none';
+    skipFeedbackBtn.style.display = 'none';
+    saveHistory('ok');
+    state.unlocked = Math.max(state.unlocked, 1);
+    saveData();
+    await typeText(stage4Bubble, '好的大人~ 下次再告诉有米吧！');
+    await wait(500);
+    goToBookBtn.classList.remove('hidden');
+  };
+
   goToBookBtn.onclick = function() {
+    SoundManager.buttonClick();
     removeSadOverlay();
     var youni3 = document.getElementById('youniStage4');
-    youni3.classList.remove('youni-sad'); youni3.classList.remove('youni-happy'); youni3.classList.remove('youni-excited');
+    setYouniPose('youniStage4', '01-default-stand');
     showStage('stage5');
     initStage5();
   };
@@ -2410,15 +3541,19 @@ function saveHistory(rating, reason) {
 
 /* ==================== 第五阶段：图鉴 ==================== */
 function initStage5() {
-  createYouniSVG('youniStage5', { glasses: true, apron: true });
-  initDustParticles('dustContainer5');
+  createYouniImg('youniStage5', '01-default-stand');
+  startYouniIdle('youniStage5');
   var stage5Bubble = document.getElementById('stage5Bubble');
   var bookPage = document.getElementById('bookPage');
   var bookNav = document.getElementById('bookNav');
-  typeText(stage5Bubble, '这是有米为大人记录的图鉴！');
+  typeText(stage5Bubble, pickDialogue('stage5_intro'));
   if (state.history.length === 0) {
-    bookPage.innerHTML = '<div class="silhouette"><div class="silhouette-icon">&#128214;</div><div class="silhouette-text">还没有解锁任何记录哦~<br>快去让有米帮你决策吧！</div></div>';
+    bookPage.innerHTML = '<div class="collection-empty"><div class="empty-sleep-hamster"><img src="youni/04-sleepy.png" alt="有米在睡觉"></div><div class="empty-sleep-text">还没有记录呢，快去转一次吧~</div><button class="menu-btn" id="emptyGoSpinBtn" style="background:#F5A623;color:#2C1810;border-color:#F5A623;">去转转</button></div>';
     bookNav.style.display = 'none';
+    document.getElementById('emptyGoSpinBtn').onclick = function() {
+      showStage('stage3');
+      initStage3();
+    };
   } else {
     bookNav.style.display = 'flex';
     var latestPage = Math.max(0, state.history.length - 1);
@@ -2426,7 +3561,7 @@ function initStage5() {
     renderBookPage(latestPage);
   }
   document.getElementById('prevPage').onclick = function() { if (state.currentPage > 0) { state.currentPage--; renderBookPage(state.currentPage); } };
-  document.getElementById('nextPage').onclick = function() { if (state.currentPage < state.history.length) { state.currentPage++; renderBookPage(state.currentPage); } };
+  document.getElementById('nextPage').onclick = function() { if (state.currentPage < state.history.length - 1) { state.currentPage++; renderBookPage(state.currentPage); } };
 }
 
 function renderBookPage(page) {
@@ -2434,7 +3569,7 @@ function renderBookPage(page) {
   var prevBtn = document.getElementById('prevPage');
   var nextBtn = document.getElementById('nextPage');
   prevBtn.disabled = page <= 0;
-  nextBtn.disabled = page >= state.history.length;
+  nextBtn.disabled = page >= state.history.length - 1;
   if (page >= state.history.length) {
     bookPage.innerHTML = '<div class="silhouette"><div class="silhouette-icon">&#10067;</div><div class="silhouette-text">第 ' + (page + 1) + ' 页<br>待解锁...</div></div>';
     return;
@@ -2459,31 +3594,158 @@ function getReasonText(r) {
 
 document.getElementById('backToWheelBtn').onclick = function() {
   var youni = document.getElementById('youniStage5');
-  youni.classList.remove('youni-sad'); youni.classList.remove('youni-happy'); youni.classList.remove('youni-excited');
+  setYouniPose('youniStage5', '01-default-stand');
   showStage('stage3'); initStage3();
 };
+
+function resetStage1() {
+  stage1Clicked = false;
+  eggContainer.style.display = 'block';
+  eggContainer.classList.remove('egg-cracked', 'egg-hatched');
+  egg.style.animation = '';
+  hatchedYouni.classList.remove('show', 'shrink');
+  hatchedYouni.innerHTML = '';
+  stage1Bubble.classList.add('hidden');
+  startFirstBtn.classList.add('hidden');
+  lightBurst.innerHTML = '';
+  goldenParticles.innerHTML = '';
+  goldenGlow.classList.remove('active');
+  goldenGlow.style.animation = '';
+  stage1.classList.remove('hatched-bg');
+  stage1.style.background = '';
+}
 
 document.getElementById('resetBtn').onclick = function() {
   if (confirm('要清空所有记录重新开始吗？')) {
     localStorage.removeItem(STORAGE_KEY);
     state.preferences = { spicy: null, soup: null, taboo: '' };
     state.history = []; state.unlocked = 0;
-    showStage('stage1');
-    stage1Clicked = false;
-    eggContainer.style.display = 'block';
-    eggContainer.classList.remove('egg-cracked', 'egg-hatched');
-    hatchedYouni.classList.remove('show', 'shrink');
-    hatchedYouni.innerHTML = '';
-    stage1Bubble.classList.add('hidden');
-    startFirstBtn.classList.add('hidden');
-    lightBurst.innerHTML = '';
-    goldenParticles.innerHTML = '';
-    goldenGlow.classList.remove('active');
+    transitioning = false;
+    resetStage1();
+    document.querySelectorAll('.stage').forEach(function(s) {
+      s.classList.remove('active', 'slide-out', 'slide-in');
+      s.style.display = 'none';
+    });
+    stage1.style.display = 'flex';
+    stage1.classList.add('active');
   }
 };
 
 /* ==================== 初始化 ==================== */
+function preloadYouniPoses() {
+  var poses = ['01-default-stand', '02-happy-stars', '03-thinking', '04-sleepy', '05-surprised', '06-sad', '11-idle-blink', '12-notice-curious', '14-expecting-anticipation', '15-recommend-proud', '24-wheel-tense'];
+  poses.forEach(function(pose) {
+    var img = new Image();
+    img.src = 'youni/' + pose + '.png';
+  });
+}
+preloadYouniPoses();
 loadData();
+if (state.preferences.spicy !== null) {
+  document.querySelectorAll('.stage').forEach(function(s) {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  var stage3El = document.getElementById('stage3');
+  stage3El.style.display = 'flex';
+  stage3El.classList.add('active');
+  initStage3();
+}
+
+var soundToggle = document.getElementById('soundToggle');
+var soundPanel = document.getElementById('soundPanel');
+var bgmOnBtn = document.getElementById('bgmOnBtn');
+var bgmOffBtn = document.getElementById('bgmOffBtn');
+var sfxOnBtn = document.getElementById('sfxOnBtn');
+var sfxOffBtn = document.getElementById('sfxOffBtn');
+var bgmSlider = document.getElementById('bgmSlider');
+var sfxSlider = document.getElementById('sfxSlider');
+
+function updateSoundPanelState() {
+  if (SoundManager.getBgmEnabled()) {
+    bgmOnBtn.classList.add('active');
+    bgmOffBtn.classList.remove('active');
+  } else {
+    bgmOnBtn.classList.remove('active');
+    bgmOffBtn.classList.add('active');
+  }
+  if (SoundManager.getSfxEnabled()) {
+    sfxOnBtn.classList.add('active');
+    sfxOffBtn.classList.remove('active');
+  } else {
+    sfxOnBtn.classList.remove('active');
+    sfxOffBtn.classList.add('active');
+  }
+  bgmSlider.value = Math.round(SoundManager.getBgmVolume() * 100);
+  sfxSlider.value = Math.round(SoundManager.getSfxVolume() * 100);
+}
+
+function updateSoundToggleIcon() {
+  var sfxOn = SoundManager.getSfxEnabled();
+  var bgmOn = SoundManager.getBgmEnabled();
+  if (sfxOn && bgmOn) {
+    soundToggle.textContent = '🔊';
+    soundToggle.classList.remove('muted');
+  } else if (!sfxOn && !bgmOn) {
+    soundToggle.textContent = '🔇';
+    soundToggle.classList.add('muted');
+  } else {
+    soundToggle.textContent = '🔉';
+    soundToggle.classList.remove('muted');
+  }
+}
+
+if (soundToggle && soundPanel) {
+  updateSoundPanelState();
+  updateSoundToggleIcon();
+
+  soundToggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    soundPanel.classList.toggle('show');
+  });
+
+  document.addEventListener('click', function(e) {
+    SoundManager.init();
+    if (!soundPanel.contains(e.target) && e.target !== soundToggle) {
+      soundPanel.classList.remove('show');
+    }
+  });
+
+  bgmOnBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    SoundManager.setBgmEnabled(true);
+    updateSoundPanelState();
+    updateSoundToggleIcon();
+  });
+  bgmOffBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    SoundManager.setBgmEnabled(false);
+    updateSoundPanelState();
+    updateSoundToggleIcon();
+  });
+  sfxOnBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    SoundManager.setSfxEnabled(true);
+    updateSoundPanelState();
+    updateSoundToggleIcon();
+    SoundManager.buttonClick();
+  });
+  sfxOffBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    SoundManager.setSfxEnabled(false);
+    updateSoundPanelState();
+    updateSoundToggleIcon();
+  });
+
+  bgmSlider.addEventListener('input', function(e) {
+    e.stopPropagation();
+    SoundManager.setBgmVolume(parseInt(bgmSlider.value) / 100);
+  });
+  sfxSlider.addEventListener('input', function(e) {
+    e.stopPropagation();
+    SoundManager.setSfxVolume(parseInt(sfxSlider.value) / 100);
+  });
+}
 </script>
 </body>
 </html>
